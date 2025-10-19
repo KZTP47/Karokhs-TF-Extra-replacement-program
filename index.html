@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Railway Configurator</title>
+    <style>
+        :root {
+            --bg-color: #2b2c2e; --bg-darker: #212223; --bg-lighter: #3c3f41;
+            --border-color: #45494a; --text-color: #ccc; --accent-color: #ffc66d;
+            --accent-hover: #ffd58a; --active-color: #82c91e;
+        }
+        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-lighter); color: var(--text-color); }
+        .page-title { background-color: var(--bg-darker); color: var(--accent-color); padding: 12px 20px; text-align: center; font-size: 1.3em; font-weight: bold; border-bottom: 2px solid var(--accent-color); }
+        .tab-navigation { background-color: var(--bg-color); display: flex; gap: 5px; padding: 10px 20px; border-bottom: 1px solid var(--border-color); }
+        .tab-button { background-color: var(--bg-darker); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 4px 4px 0 0; cursor: pointer; transition: all 0.2s; }
+        .tab-button:hover { background-color: var(--bg-lighter); }
+        .tab-button.active { background-color: var(--accent-color); color: #333; font-weight: bold; }
+        .tab-content { display: none; flex-grow: 1; min-height: 0; }
+        .tab-content.active { display: flex; }
+        .app-container { display: flex; flex-grow: 1; padding: 15px; gap: 15px; min-height: 0; }
+        .main-content { display: flex; flex-direction: column; flex-grow: 1; gap: 15px; }
+        .side-panel { width: 280px; flex-shrink: 0; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .panel-section { border: 1px solid var(--border-color); border-radius: 4px; padding: 10px; }
+        .panel-section h3 { margin: 0 0 10px 0; font-size: 1em; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+        button { background-color: var(--bg-lighter); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #4a4d4f; }
+        .viewer-container { display: flex; flex-direction: column; flex-grow: 1; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; }
+        .toolbar { padding: 5px; background: var(--bg-darker); display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+        .toolbar button { background-color: var(--accent-color); color: #333; border: none; font-weight: bold; font-size: 12px; }
+        .toolbar button.active { background-color: var(--active-color); box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        .toolbar label { font-size: 12px; margin-left: 5px; }
+        .viewer-wrapper { flex-grow: 1; position: relative; overflow: hidden; }
+        #svg-display { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        #svg-display.drawing-active { cursor: crosshair; }
+        #svg-display svg { width: 100%; height: 100%; cursor: grab; }
+        .spreadsheet-container { height: 300px; flex-shrink: 0; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; display: flex; flex-direction: column;}
+        .spreadsheet-wrapper { overflow: auto; flex-grow: 1; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; font-size: 0.85em; white-space: nowrap; }
+        th { background-color: var(--bg-lighter); position: sticky; top: 0; z-index: 10; }
+        td { background-color: var(--bg-darker); }
+        td:focus, th:focus { background-color: #4a4d4f; outline: 1px solid var(--accent-color); }
+        .actions-cell { text-align: center; white-space: nowrap; }
+        .actions-cell button { font-size: 11px; padding: 4px 8px; margin: 2px; background-color: var(--accent-color); color: #333; font-weight: bold; border: none; }
+        .actions-cell button:hover { background-color: var(--accent-hover); }
+        .context-menu { position: fixed; display: none; background: var(--bg-lighter); border: 1px solid var(--border-color); border-radius: 4px; padding: 5px; z-index: 1000; }
+        .context-menu button { display: block; width: 100%; text-align: left; }
+        #layers-list { list-style: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto;}
+        #layers-list li { display: flex; align-items: center; padding: 5px; cursor: pointer; border-radius: 3px; gap: 5px; }
+        #layers-list li.active { background-color: var(--active-color); color: #000; }
+        #layers-list li .visibility { margin-right: 8px; cursor: pointer; }
+        #layers-list li .layer-name { flex-grow: 1; }
+        #layers-list li .layer-controls { display: flex; gap: 3px; }
+        #layers-list li .layer-controls button { padding: 2px 6px; font-size: 11px; background-color: var(--bg-darker); border: 1px solid var(--border-color); }
+        .export-buttons { display: flex; flex-direction: column; gap: 5px; }
+        .export-buttons button { width: 100%; white-space: normal; text-align: center; line-height: 1.2; }
+        .pdf-viewer-container { display: flex; flex-direction: column; width: 100%; height: 100%; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; }
+        .pdf-toolbar { padding: 10px; background: var(--bg-darker); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--border-color); }
+        .pdf-toolbar input[type="file"] { display: none; }
+        .pdf-toolbar input[type="text"] { flex: 1; min-width: 200px; padding: 6px 10px; background-color: var(--bg-lighter); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 3px; }
+        .pdf-display { flex-grow: 1; overflow: auto; padding: 20px; display: flex; justify-content: center; align-items: flex-start; background-color: #525252; }
+        .pdf-display canvas { box-shadow: 0 2px 10px rgba(0,0,0,0.5); max-width: 100%; height: auto; }
+        .pdf-display iframe { width: 100%; height: 100%; border: none; background: white; }
+    </style>
+</head>
+<body>
+
+    <div class="page-title">Karokh's TF-Extra replacement program</div>
+
+    <div class="tab-navigation">
+        <button class="tab-button active" data-tab="configurator">Railway Configurator</button>
+        <button class="tab-button" data-tab="pdf-viewer">Sternol.pdf viewer</button>
+    </div>
+
+    <div class="tab-content active" id="configurator-tab">
+    <div class="app-container">
+        <div class="main-content">
+            <div class="viewer-container">
+                <div class="toolbar">
+                    <button id="pan-tool-btn" class="active">Pan</button>
+                    <button id="pencil-tool-btn">Pencil</button>
+                    <button id="line-tool-btn">Line</button>
+                    <button id="rect-tool-btn">Rect</button>
+                    <button id="circle-tool-btn">Circle</button>
+                    <button id="eraser-tool-btn">Eraser</button>
+                    <label>FG:</label><input type="color" id="fg-color-picker" value="#ff0000" title="Drawing Color">
+                    <label>BG:</label><input type="color" id="bg-color-picker" value="#2b2c2e" title="Background Color">
+                </div>
+                <div class="viewer-wrapper" id="viewer-wrapper">
+                    <div id="svg-display"><span style="padding: 20px;">Load a session or SVG file to begin.</span></div>
+                </div>
+            </div>
+            <div class="spreadsheet-container">
+                <div class="spreadsheet-wrapper">
+                    <table id="data-table">
+                        <thead><tr><th>Vägskydd</th><th>Vägtyp</th><th>Rörelseväg Start</th><th style="min-width:200px;">Actions</th></tr></thead>
+                        <tbody><tr><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td class="actions-cell"></td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="panel-section">
+                <h3>Session</h3>
+                <input type="file" id="session-loader" accept=".json" style="display:none;">
+                <button id="load-session-btn" style="width:100%; margin-bottom:5px;">Load Session</button>
+                <button id="save-session-btn" style="width:100%;">Save Session</button>
+            </div>
+             <div class="panel-section">
+                <h3>SVG File</h3>
+                <input type="file" id="svg-loader" accept=".html" style="display:none;">
+                <button id="load-svg-btn" style="width:100%;">Load SVG from HTML</button>
+            </div>
+            <div class="panel-section">
+                <h3>Layers</h3>
+                <ul id="layers-list"></ul>
+                <div style="display:flex; gap:5px; margin-top:10px;">
+                    <button id="add-layer-btn">+</button>
+                    <button id="remove-layer-btn">-</button>
+                </div>
+            </div>
+            <div class="panel-section">
+                <h3>Spreadsheet</h3>
+                <input type="file" id="template-loader" accept=".json" style="display:none;">
+                <input type="file" id="txt-import-loader" accept=".txt" style="display:none;">
+                <button id="load-template-btn" style="width:100%; margin-bottom:5px;">Load Template</button>
+                <button id="save-template-btn" style="width:100%; margin-bottom:5px;">Save Template</button>
+                <button id="add-row-btn" style="width:100%; margin-bottom:5px;">Add Test Case</button>
+                <button id="add-column-btn" style="width:100%; margin-bottom:5px;">Add Column</button>
+                <button id="edit-headers-btn" style="width:100%; margin-bottom:5px;">Edit Headers</button>
+                <button id="import-txt-btn" style="width:100%;">Import from TXT</button>
+            </div>
+             <div class="panel-section">
+                <h3>Export</h3>
+                <div class="export-buttons">
+                    <button id="export-approach-btn">Approach_Locking.txt</button>
+                    <button id="export-shuntarea-btn">Shuntarea.txt</button>
+                    <button id="export-levelcrossing-btn">Levelcrossing.txt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="tab-content" id="pdf-viewer-tab">
+        <div class="app-container">
+            <div class="pdf-viewer-container" style="flex-grow: 1;">
+                <div class="pdf-toolbar">
+                    <input type="file" id="pdf-file-input" accept=".pdf">
+                    <button id="load-pdf-btn">Load PDF</button>
+                    <input type="text" id="pdf-search-input" placeholder="Search in PDF...">
+                    <button id="pdf-search-btn">Search</button>
+                    <button id="pdf-prev-btn">◄ Previous</button>
+                    <span id="pdf-page-info">Page: - / -</span>
+                    <button id="pdf-next-btn">Next ►</button>
+                    <button id="pdf-zoom-out-btn">Zoom -</button>
+                    <button id="pdf-zoom-in-btn">Zoom +</button>
+                </div>
+                <div class="pdf-display" id="pdf-display">
+                    <div style="color: #ccc; padding: 40px; text-align: center;">
+                        <h2>Sternol PDF Viewer</h2>
+                        <p>Click "Load PDF" to open a PDF file</p>
+                        <p style="font-size: 0.9em; margin-top: 20px;">Features: View, Search, Navigate, Zoom</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="context-menu" id="context-menu">
+        <button id="delete-row-btn">Delete Row</button>
+        <button id="delete-col-btn">Delete Column</button>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- TAB NAVIGATION ---
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.dataset.tab;
+                
+                // Update button states
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update tab content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+            });
+        });
+
+        // --- GLOBAL STATE & ELEMENT REFERENCES ---
+        const svgDisplay = document.getElementById('svg-display');
+        const viewerWrapper = document.getElementById('viewer-wrapper');
+        const dataTable = document.getElementById('data-table');
+        const contextMenu = document.getElementById('context-menu');
+        const layersList = document.getElementById('layers-list');
+
+        let svgElement = null, viewBox = [0, 0, 1000, 1000];
+        let drawingGroup = null; // SVG group for drawings
+        let layers = [], activeLayerId = null;
+        let currentTool = 'pan';
+        let isDrawing = false, isPanning = false;
+        let startPoint = {}, panStartPoint = {};
+        let currentPath = null; // For pencil tool
+        let tempElement = null; // For preview during drawing
+        let contextTargetCell = null;
+
+        // --- COORDINATE TRANSFORMATION UTILITY ---
+        function screenToSvgCoords(clientX, clientY) {
+            const pt = svgElement.createSVGPoint();
+            pt.x = clientX;
+            pt.y = clientY;
+            return pt.matrixTransform(svgElement.getScreenCTM().inverse());
+        }
+
+        // --- DRAWING & LAYERS ---
+        function addLayer(name = `Layer ${layers.length + 1}`) {
+            const newLayer = { 
+                id: Date.now(), 
+                name, 
+                isVisible: true, 
+                group: null
+            };
+            layers.push(newLayer);
+            setActiveLayer(newLayer.id);
+            renderLayersUI();
+            createLayerGroup(newLayer);
+            reorderLayersInSVG(); // Ensure proper draw order
+            return newLayer;
+        }
+
+        function createLayerGroup(layer) {
+            if (!drawingGroup) return;
+            layer.group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            layer.group.setAttribute('id', `layer-${layer.id}`);
+            layer.group.setAttribute('data-layer-name', layer.name);
+            drawingGroup.appendChild(layer.group);
+        }
+
+        function setActiveLayer(id) {
+            activeLayerId = id;
+            renderLayersUI();
+        }
+
+        function renderLayersUI() {
+            layersList.innerHTML = '';
+            layers.forEach((layer, index) => {
+                const li = document.createElement('li');
+                li.className = layer.id === activeLayerId ? 'active' : '';
+                li.dataset.id = layer.id;
+                li.innerHTML = `
+                    <span class="visibility">${layer.isVisible ? '👁️' : '🙈'}</span>
+                    <span class="layer-name" contenteditable="true">${layer.name}</span>
+                    <span class="layer-controls">
+                        <button class="move-up" ${index === 0 ? 'disabled' : ''}>↑</button>
+                        <button class="move-down" ${index === layers.length - 1 ? 'disabled' : ''}>↓</button>
+                    </span>
+                `;
+                layersList.appendChild(li);
+            });
+        }
+        
+        function updateLayerVisibility(layerId, visible) {
+            const layer = layers.find(l => l.id === layerId);
+            if (layer && layer.group) {
+                layer.group.style.display = visible ? 'block' : 'none';
+            }
+        }
+        
+        function reorderLayersInSVG() {
+            if (!drawingGroup) return;
+            // Remove all groups first
+            layers.forEach(layer => {
+                if (layer.group && layer.group.parentNode === drawingGroup) {
+                    layer.group.remove();
+                }
+            });
+            // Re-add in order (first layer = bottom, last = top)
+            layers.forEach(layer => {
+                if (layer.group) {
+                    drawingGroup.appendChild(layer.group);
+                }
+            });
+        }
+        
+        function moveLayer(layerId, direction) {
+            const index = layers.findIndex(l => l.id === layerId);
+            if (index === -1) return;
+            
+            const newIndex = direction === 'up' ? index - 1 : index + 1;
+            if (newIndex < 0 || newIndex >= layers.length) return;
+            
+            // Swap layers
+            [layers[index], layers[newIndex]] = [layers[newIndex], layers[index]];
+            
+            // Update SVG order
+            reorderLayersInSVG();
+            renderLayersUI();
+        }
+
+        // --- EVENT LISTENERS ---
+        function setupToolbarListeners() {
+            document.querySelectorAll('.toolbar button[id$="-tool-btn"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelector('.toolbar button.active').classList.remove('active');
+                    btn.classList.add('active');
+                    currentTool = btn.id.replace('-tool-btn', '');
+                    if (currentTool === 'pan') {
+                        svgDisplay.style.cursor = 'grab';
+                    } else if (currentTool === 'eraser') {
+                        svgDisplay.style.cursor = 'not-allowed';
+                    } else {
+                        svgDisplay.style.cursor = 'crosshair';
+                    }
+                });
+            });
+            document.getElementById('bg-color-picker').addEventListener('input', e => viewerWrapper.style.backgroundColor = e.target.value);
+        }
+
+        function setupPanZoomListeners() {
+            viewerWrapper.addEventListener('mousedown', e => {
+                if (currentTool !== 'pan' || e.button !== 0 || !svgElement) return;
+                isPanning = true;
+                svgDisplay.style.cursor = 'grabbing';
+                panStartPoint = { x: e.clientX, y: e.clientY };
+            });
+            viewerWrapper.addEventListener('mousemove', e => {
+                if (!isPanning) return;
+                const dx = panStartPoint.x - e.clientX;
+                const dy = panStartPoint.y - e.clientY;
+                viewBox[0] += dx * (viewBox[2] / viewerWrapper.clientWidth);
+                viewBox[1] += dy * (viewBox[3] / viewerWrapper.clientHeight);
+                svgElement.setAttribute('viewBox', viewBox.join(' '));
+                panStartPoint = { x: e.clientX, y: e.clientY };
+            });
+            window.addEventListener('mouseup', () => {
+                isPanning = false;
+                if(currentTool === 'pan' && svgElement) svgDisplay.style.cursor = 'grab';
+            });
+            
+            viewerWrapper.addEventListener('wheel', e => {
+                if (!svgElement) return;
+                e.preventDefault();
+                
+                const rect = viewerWrapper.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const xPercent = mouseX / rect.width;
+                const yPercent = mouseY / rect.height;
+                
+                const [x, y, w, h] = viewBox;
+                
+                const zoomFactor = 1.1;
+                const scale = e.deltaY > 0 ? zoomFactor : 1 / zoomFactor;
+                
+                const newW = w * scale;
+                const newH = h * scale;
+                
+                const svgX = x + w * xPercent;
+                const svgY = y + h * yPercent;
+                
+                const newX = svgX - newW * xPercent;
+                const newY = svgY - newH * yPercent;
+                
+                viewBox = [newX, newY, newW, newH];
+                svgElement.setAttribute('viewBox', viewBox.join(' '));
+            });
+        }
+
+        function setupDrawingListeners() {
+            viewerWrapper.addEventListener('mousedown', e => {
+                // Handle eraser tool
+                if (currentTool === 'eraser' && e.button === 0 && svgElement) {
+                    const target = e.target;
+                    // Check if target is a drawn element (inside a layer group)
+                    const layerGroup = target.closest('g[id^="layer-"]');
+                    if (layerGroup && target !== layerGroup && target.tagName !== 'svg') {
+                        target.remove();
+                        return;
+                    }
+                }
+                
+                if (currentTool === 'pan' || currentTool === 'eraser' || e.button !== 0 || !activeLayerId || !svgElement) return;
+                isDrawing = true;
+                const pt = screenToSvgCoords(e.clientX, e.clientY);
+                startPoint = { x: pt.x, y: pt.y };
+                
+                const activeLayer = layers.find(l => l.id === activeLayerId);
+                const color = document.getElementById('fg-color-picker').value;
+                
+                if (currentTool === 'pencil') {
+                    currentPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    currentPath.setAttribute('stroke', color);
+                    currentPath.setAttribute('stroke-width', '5');
+                    currentPath.setAttribute('fill', 'none');
+                    currentPath.setAttribute('stroke-linecap', 'round');
+                    currentPath.setAttribute('stroke-linejoin', 'round');
+                    currentPath.setAttribute('d', `M ${pt.x} ${pt.y}`);
+                    currentPath.style.pointerEvents = 'all'; // Make it clickable for eraser
+                    activeLayer.group.appendChild(currentPath);
+                } else {
+                    // Create preview element
+                    if (currentTool === 'line') {
+                        tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        tempElement.setAttribute('x1', pt.x);
+                        tempElement.setAttribute('y1', pt.y);
+                        tempElement.setAttribute('x2', pt.x);
+                        tempElement.setAttribute('y2', pt.y);
+                    } else if (currentTool === 'rect') {
+                        tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        tempElement.setAttribute('x', pt.x);
+                        tempElement.setAttribute('y', pt.y);
+                        tempElement.setAttribute('width', '0');
+                        tempElement.setAttribute('height', '0');
+                    } else if (currentTool === 'circle') {
+                        tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        tempElement.setAttribute('cx', pt.x);
+                        tempElement.setAttribute('cy', pt.y);
+                        tempElement.setAttribute('r', '0');
+                    }
+                    if (tempElement) {
+                        tempElement.setAttribute('stroke', '#aaa');
+                        tempElement.setAttribute('stroke-width', '3');
+                        tempElement.setAttribute('fill', 'none');
+                        tempElement.setAttribute('stroke-dasharray', '5,5');
+                        tempElement.style.pointerEvents = 'all'; // Make it clickable for eraser
+                        activeLayer.group.appendChild(tempElement);
+                    }
+                }
+            });
+            
+            viewerWrapper.addEventListener('mousemove', e => {
+                if (!isDrawing) return;
+                const pt = screenToSvgCoords(e.clientX, e.clientY);
+                
+                if (currentTool === 'pencil' && currentPath) {
+                    const d = currentPath.getAttribute('d');
+                    currentPath.setAttribute('d', `${d} L ${pt.x} ${pt.y}`);
+                } else if (tempElement) {
+                    if (currentTool === 'line') {
+                        tempElement.setAttribute('x2', pt.x);
+                        tempElement.setAttribute('y2', pt.y);
+                    } else if (currentTool === 'rect') {
+                        const x = Math.min(startPoint.x, pt.x);
+                        const y = Math.min(startPoint.y, pt.y);
+                        const w = Math.abs(pt.x - startPoint.x);
+                        const h = Math.abs(pt.y - startPoint.y);
+                        tempElement.setAttribute('x', x);
+                        tempElement.setAttribute('y', y);
+                        tempElement.setAttribute('width', w);
+                        tempElement.setAttribute('height', h);
+                    } else if (currentTool === 'circle') {
+                        const r = Math.hypot(pt.x - startPoint.x, pt.y - startPoint.y);
+                        tempElement.setAttribute('r', r);
+                    }
+                }
+            });
+
+            window.addEventListener('mouseup', e => {
+                if (!isDrawing) return;
+                isDrawing = false;
+                
+                const color = document.getElementById('fg-color-picker').value;
+                
+                if (currentTool === 'pencil') {
+                    currentPath = null;
+                } else if (tempElement) {
+                    // Replace preview with final element
+                    tempElement.setAttribute('stroke', color);
+                    tempElement.setAttribute('stroke-width', '5');
+                    tempElement.removeAttribute('stroke-dasharray');
+                    tempElement = null;
+                }
+            });
+        }
+        
+        function setupLayerListeners() {
+            document.getElementById('add-layer-btn').addEventListener('click', () => addLayer());
+            document.getElementById('remove-layer-btn').addEventListener('click', () => {
+                if (layers.length <= 1) return alert("Cannot delete the last layer.");
+                const layerToRemove = layers.find(l => l.id === activeLayerId);
+                if (layerToRemove && layerToRemove.group) {
+                    layerToRemove.group.remove();
+                }
+                layers = layers.filter(l => l.id !== activeLayerId);
+                setActiveLayer(layers.at(-1)?.id);
+                renderLayersUI();
+            });
+            layersList.addEventListener('click', e => {
+                const li = e.target.closest('li');
+                if (!li) return;
+                const id = Number(li.dataset.id);
+                
+                // Handle move up/down buttons
+                if (e.target.classList.contains('move-up')) {
+                    e.stopPropagation();
+                    moveLayer(id, 'up');
+                    return;
+                }
+                if (e.target.classList.contains('move-down')) {
+                    e.stopPropagation();
+                    moveLayer(id, 'down');
+                    return;
+                }
+                
+                // Handle visibility toggle
+                if (e.target.classList.contains('visibility')) {
+                    const layer = layers.find(l => l.id === id);
+                    layer.isVisible = !layer.isVisible;
+                    updateLayerVisibility(id, layer.isVisible);
+                    renderLayersUI();
+                } else if (!e.target.classList.contains('layer-name') && !e.target.closest('.layer-controls')) {
+                    // Select layer only if not clicking on name or controls
+                    setActiveLayer(id);
+                }
+            });
+            layersList.addEventListener('focusout', e => {
+                if (e.target.classList.contains('layer-name')) {
+                    const id = Number(e.target.closest('li').dataset.id);
+                    const layer = layers.find(l => l.id === id);
+                    layer.name = e.target.textContent;
+                    if (layer.group) {
+                        layer.group.setAttribute('data-layer-name', layer.name);
+                    }
+                }
+            });
+        }
+
+        function setupSpreadsheetListeners() {
+            dataTable.addEventListener('dragover', e => e.preventDefault());
+            dataTable.addEventListener('drop', e => {
+                if (e.target.tagName !== 'TD') return;
+                const id = e.dataTransfer.getData('text/plain');
+                e.target.textContent += (e.target.textContent ? ',' : '') + id;
+            });
+            dataTable.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                contextTargetCell = e.target.closest('td, th');
+                if (!contextTargetCell) return;
+                contextMenu.style.display = 'block';
+                contextMenu.style.left = `${e.clientX}px`;
+                contextMenu.style.top = `${e.clientY}px`;
+            });
+            document.addEventListener('click', () => contextMenu.style.display = 'none');
+            document.getElementById('delete-row-btn').addEventListener('click', () => {
+                if (contextTargetCell && dataTable.tBodies[0].rows.length > 1) {
+                     contextTargetCell.parentElement.remove();
+                     updateTestCaseButtons();
+                }
+            });
+            document.getElementById('delete-col-btn').addEventListener('click', () => {
+                if (contextTargetCell) {
+                    const colIndex = contextTargetCell.cellIndex;
+                    for (const row of dataTable.rows) {
+                        if (colIndex < row.cells.length - 1) { // Don't delete actions column
+                            row.deleteCell(colIndex);
+                        }
+                    }
+                }
+            });
+            
+            // Make headers editable on double-click or via button
+            dataTable.querySelector('thead').addEventListener('dblclick', e => {
+                if (e.target.tagName === 'TH' && !e.target.textContent.includes('Actions')) {
+                    e.target.setAttribute('contenteditable', true);
+                    e.target.focus();
+                }
+            });
+            dataTable.querySelector('thead').addEventListener('focusout', e => {
+                 if (e.target.tagName === 'TH') e.target.removeAttribute('contenteditable');
+            });
+            
+            // Edit headers button
+            document.getElementById('edit-headers-btn').addEventListener('click', () => {
+                const headers = dataTable.querySelectorAll('thead th');
+                headers.forEach(th => {
+                    if (!th.textContent.includes('Actions')) {
+                        th.setAttribute('contenteditable', true);
+                        th.style.backgroundColor = '#4a4d4f';
+                    }
+                });
+                // Focus first header
+                if (headers.length > 0) headers[0].focus();
+                
+                // Remove editing state when clicking outside
+                const removeEditingState = () => {
+                    headers.forEach(th => {
+                        th.removeAttribute('contenteditable');
+                        th.style.backgroundColor = '';
+                    });
+                    document.removeEventListener('click', removeEditingState);
+                };
+                setTimeout(() => document.addEventListener('click', removeEditingState, { once: true }), 100);
+            });
+            
+            document.getElementById('add-row-btn').addEventListener('click', addTestCase);
+            
+            // New spreadsheet functions
+            window.addColumnToRow = function(rowIndex) {
+                const row = dataTable.tBodies[0].rows[rowIndex];
+                const actionsCell = row.querySelector('.actions-cell');
+                const newCell = row.insertCell(row.cells.length - 1); // Insert before actions
+                newCell.setAttribute('contenteditable', 'true');
+            };
+            
+            window.deleteColumnFromRow = function(rowIndex) {
+                const row = dataTable.tBodies[0].rows[rowIndex];
+                const dataCells = [...row.cells].filter(cell => !cell.classList.contains('actions-cell'));
+                if (dataCells.length > 1) {
+                    const lastDataCell = dataCells[dataCells.length - 1];
+                    row.deleteCell(lastDataCell.cellIndex);
+                }
+            };
+            
+            window.deleteTestCase = function(rowIndex) {
+                if (dataTable.tBodies[0].rows.length > 1) {
+                    dataTable.tBodies[0].deleteRow(rowIndex);
+                    updateTestCaseButtons();
+                }
+            };
+        }
+        
+        function addTestCase() {
+            const newRow = dataTable.tBodies[0].insertRow();
+            const colCount = dataTable.rows[0].cells.length - 1; // Exclude actions column
+            for (let i = 0; i < colCount; i++) newRow.insertCell().setAttribute('contenteditable', 'true');
+            const actionsCell = newRow.insertCell();
+            actionsCell.className = 'actions-cell';
+            updateTestCaseButtons();
+        }
+        
+        function updateTestCaseButtons() {
+            const tbody = dataTable.querySelector('tbody');
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach((row, idx) => {
+                let actionsCell = row.querySelector('.actions-cell');
+                if (!actionsCell) {
+                    actionsCell = row.insertCell();
+                    actionsCell.className = 'actions-cell';
+                }
+                actionsCell.innerHTML = `
+                    <button onclick="addColumnToRow(${idx})">Add Cell</button>
+                    <button onclick="deleteColumnFromRow(${idx})">Delete Cell</button>
+                    <button onclick="deleteTestCase(${idx})">Delete Testcase</button>
+                `;
+            });
+        }
+
+        function setupFileIOListeners() {
+            document.getElementById('load-svg-btn').addEventListener('click', () => document.getElementById('svg-loader').click());
+            document.getElementById('svg-loader').addEventListener('change', e => {
+                const reader = new FileReader();
+                reader.onload = f => {
+                    const doc = new DOMParser().parseFromString(f.target.result, 'text/html');
+                    const svg = doc.querySelector('svg');
+                    loadSvg(svg.outerHTML);
+                };
+                reader.readAsText(e.target.files[0]);
+            });
+            document.getElementById('save-template-btn').addEventListener('click', saveTemplate);
+            document.getElementById('load-template-btn').addEventListener('click', () => document.getElementById('template-loader').click());
+            document.getElementById('template-loader').addEventListener('change', loadTemplate);
+            document.getElementById('save-session-btn').addEventListener('click', saveSession);
+            document.getElementById('load-session-btn').addEventListener('click', () => document.getElementById('session-loader').click());
+            document.getElementById('session-loader').addEventListener('change', loadSession);
+            document.getElementById('export-approach-btn').addEventListener('click', () => exportToTxt('Approach_Locking.txt'));
+            document.getElementById('export-shuntarea-btn').addEventListener('click', () => exportToTxt('Shuntarea.txt'));
+            document.getElementById('export-levelcrossing-btn').addEventListener('click', () => exportToTxt('Levelcrossing.txt'));
+            document.getElementById('add-column-btn').addEventListener('click', addColumn);
+            document.getElementById('import-txt-btn').addEventListener('click', () => document.getElementById('txt-import-loader').click());
+            document.getElementById('txt-import-loader').addEventListener('change', importFromTxt);
+        }
+
+        function loadSvg(svgString) {
+            svgDisplay.innerHTML = svgString;
+            svgElement = svgDisplay.querySelector('svg');
+            viewBox = (svgElement.getAttribute('viewBox') || `0 0 ${svgElement.getAttribute('width')} ${svgElement.getAttribute('height')}`).split(' ').map(Number);
+            
+            // Create or find drawing group
+            drawingGroup = svgElement.querySelector('#drawing-layer');
+            if (!drawingGroup) {
+                drawingGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                drawingGroup.setAttribute('id', 'drawing-layer');
+                svgElement.appendChild(drawingGroup);
+            }
+            
+            // Recreate layer groups
+            layers.forEach(layer => createLayerGroup(layer));
+            reorderLayersInSVG(); // Ensure correct draw order
+            
+            svgElement.querySelectorAll('g[id]').forEach(elem => {
+                if (elem.id !== 'drawing-layer' && !elem.id.startsWith('layer-')) {
+                    elem.setAttribute('draggable', true);
+                    elem.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', e.target.id));
+                }
+            });
+        }
+
+        // --- SAVE/LOAD & EXPORT FUNCTIONS ---
+        function getTableData() {
+            const headers = [...dataTable.querySelectorAll('thead th')]
+                .filter(th => !th.textContent.includes('Actions'))
+                .map(th => th.textContent);
+            const rows = [...dataTable.querySelectorAll('tbody tr')].map(tr => 
+                [...tr.querySelectorAll('td')]
+                    .filter(td => !td.classList.contains('actions-cell'))
+                    .map(td => td.textContent)
+            );
+            return { headers, rows };
+        }
+
+        function buildTable(headers, rows) {
+            dataTable.innerHTML = `<thead><tr>${headers.map(h => `<th contenteditable="false">${h}</th>`).join('')}<th style="min-width:200px;">Actions</th></tr></thead>
+                                   <tbody>${rows.map(row => `<tr>${row.map(cell => `<td contenteditable="true">${cell}</td>`).join('')}<td class="actions-cell"></td></tr>`).join('')}</tbody>`;
+            updateTestCaseButtons();
+        }
+
+        function saveTemplate() {
+            const data = { headers: getTableData().headers };
+            downloadJSON(data, 'spreadsheet-template.json');
+        }
+
+        function loadTemplate(event) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const { headers } = JSON.parse(e.target.result);
+                buildTable(headers, [Array(headers.length).fill('')]);
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+
+        function saveSession() {
+            if (!svgElement) return alert("Cannot save session without a loaded SVG.");
+            
+            // Serialize layer data
+            const layerData = layers.map(layer => ({
+                id: layer.id,
+                name: layer.name,
+                isVisible: layer.isVisible,
+                svgContent: layer.group ? layer.group.innerHTML : ''
+            }));
+            
+            const session = {
+                svgContent: svgDisplay.innerHTML,
+                viewBox,
+                layerData,
+                activeLayerId,
+                tableData: getTableData(),
+                backgroundColor: viewerWrapper.style.backgroundColor
+            };
+            downloadJSON(session, 'railway-session.json');
+        }
+
+        function loadSession(event) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const session = JSON.parse(e.target.result);
+                loadSvg(session.svgContent);
+                viewBox = session.viewBox;
+                svgElement.setAttribute('viewBox', viewBox.join(' '));
+                
+                // Clear existing layers
+                layers.forEach(layer => {
+                    if (layer.group) layer.group.remove();
+                });
+                layers = [];
+                
+                // Restore layers (handle both old and new format)
+                if (session.layerData) {
+                    // New format with SVG-based layers
+                    session.layerData.forEach(layerData => {
+                        const layer = {
+                            id: layerData.id,
+                            name: layerData.name,
+                            isVisible: layerData.isVisible,
+                            group: null
+                        };
+                        layers.push(layer);
+                        createLayerGroup(layer);
+                        if (layerData.svgContent && layer.group) {
+                            layer.group.innerHTML = layerData.svgContent;
+                        }
+                        updateLayerVisibility(layer.id, layer.isVisible);
+                    });
+                } else if (session.layers) {
+                    // Old format - just restore layer metadata, no drawings
+                    session.layers.forEach(oldLayer => {
+                        const layer = {
+                            id: oldLayer.id,
+                            name: oldLayer.name,
+                            isVisible: oldLayer.isVisible,
+                            group: null
+                        };
+                        layers.push(layer);
+                        createLayerGroup(layer);
+                        updateLayerVisibility(layer.id, layer.isVisible);
+                    });
+                }
+                
+                // Ensure at least one layer exists
+                if (layers.length === 0) {
+                    const defaultLayer = { id: Date.now(), name: "Default Layer", isVisible: true, group: null };
+                    layers.push(defaultLayer);
+                    createLayerGroup(defaultLayer);
+                }
+                
+                activeLayerId = session.activeLayerId || layers[0].id;
+                buildTable(session.tableData.headers, session.tableData.rows);
+                viewerWrapper.style.backgroundColor = session.backgroundColor;
+                document.getElementById('bg-color-picker').value = rgbToHex(session.backgroundColor);
+                renderLayersUI();
+                reorderLayersInSVG(); // Ensure layers are in correct draw order
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+        
+        function exportToTxt(filename = 'Levelcrossing_export.txt') {
+            const { rows } = getTableData();
+            const outputText = rows.filter(row => row.some(cell => cell.trim() !== '')).map(row => row.join('|')).join('\n');
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+        
+        function importFromTxt(event) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const content = e.target.result;
+                const lines = content.split('\n').filter(line => line.trim() !== '');
+                
+                if (lines.length === 0) return alert('Empty file');
+                
+                const rows = lines.map(line => line.split('|').map(cell => cell.trim()));
+                const { headers } = getTableData();
+                const maxCols = Math.max(...rows.map(r => r.length), headers.length);
+                
+                while (headers.length < maxCols) {
+                    headers.push(`Column ${headers.length + 1}`);
+                }
+                
+                buildTable(headers, rows);
+            };
+            reader.readAsText(event.target.files[0]);
+        }
+        
+        function addColumn() {
+            const headerRow = dataTable.querySelector('thead tr');
+            const actionsHeader = headerRow.querySelector('th:last-child');
+            const newHeader = document.createElement('th');
+            newHeader.textContent = `Column ${headerRow.cells.length}`;
+            newHeader.setAttribute('contenteditable', 'false');
+            headerRow.insertBefore(newHeader, actionsHeader);
+            
+            const rows = dataTable.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const actionsCell = row.querySelector('.actions-cell');
+                const newCell = row.insertCell(row.cells.length - 1);
+                newCell.setAttribute('contenteditable', 'true');
+            });
+        }
+
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+        
+        function rgbToHex(rgb) {
+            if (!rgb || !rgb.includes('rgb')) return '#2b2c2e';
+            let [r, g, b] = rgb.match(/\d+/g).map(Number);
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0');
+        }
+        
+        // --- START THE APP ---
+        // Initialize with default layer (will create group when SVG is loaded)
+        const defaultLayer = { id: Date.now(), name: "Default Layer", isVisible: true, group: null };
+        layers.push(defaultLayer);
+        activeLayerId = defaultLayer.id;
+        renderLayersUI();
+        
+        setupToolbarListeners();
+        setupSpreadsheetListeners();
+        setupFileIOListeners();
+        setupLayerListeners();
+        setupPanZoomListeners();
+        setupDrawingListeners();
+        updateTestCaseButtons();
+
+        // --- PDF VIEWER FUNCTIONALITY ---
+        let pdfDoc = null;
+        let currentPage = 1;
+        let pdfZoom = 1.0;
+        const pdfDisplay = document.getElementById('pdf-display');
+        const pageInfo = document.getElementById('pdf-page-info');
+
+        document.getElementById('load-pdf-btn').addEventListener('click', () => {
+            document.getElementById('pdf-file-input').click();
+        });
+
+        document.getElementById('pdf-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type === 'application/pdf') {
+                const fileURL = URL.createObjectURL(file);
+                loadPDFInIframe(fileURL);
+            }
+        });
+
+        function loadPDFInIframe(url) {
+            pdfDisplay.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+            pageInfo.textContent = 'PDF Loaded';
+        }
+
+        document.getElementById('pdf-search-btn').addEventListener('click', () => {
+            const searchTerm = document.getElementById('pdf-search-input').value;
+            if (searchTerm) {
+                const iframe = pdfDisplay.querySelector('iframe');
+                if (iframe && iframe.contentWindow) {
+                    try {
+                        iframe.contentWindow.postMessage({type: 'search', term: searchTerm}, '*');
+                    } catch (e) {
+                        alert('Search functionality requires browser support. Try using Ctrl+F in the PDF viewer.');
+                    }
+                }
+            }
+        });
+
+        document.getElementById('pdf-zoom-in-btn').addEventListener('click', () => {
+            const iframe = pdfDisplay.querySelector('iframe');
+            if (iframe) {
+                pdfZoom += 0.1;
+                iframe.style.transform = `scale(${pdfZoom})`;
+                iframe.style.transformOrigin = 'top center';
+            }
+        });
+
+        document.getElementById('pdf-zoom-out-btn').addEventListener('click', () => {
+            const iframe = pdfDisplay.querySelector('iframe');
+            if (iframe && pdfZoom > 0.5) {
+                pdfZoom -= 0.1;
+                iframe.style.transform = `scale(${pdfZoom})`;
+                iframe.style.transformOrigin = 'top center';
+            }
+        });
+
+        document.getElementById('pdf-search-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('pdf-search-btn').click();
+            }
+        });
+    });
+    </script>
+</body>
+</html>
