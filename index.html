@@ -18,9 +18,9 @@
         .tab-button.active { background-color: var(--accent-color); color: #333; font-weight: bold; }
         .tab-content { display: none; flex-grow: 1; min-height: 0; }
         .tab-content.active { display: flex; }
-        .app-container { display: flex; flex-grow: 1; padding: 15px; gap: 15px; min-height: 0; }
-        .main-content { display: flex; flex-direction: column; flex-grow: 1; gap: 15px; }
-        .side-panel { width: 280px; flex-shrink: 0; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .app-container { display: flex; flex-grow: 1; padding: 15px; gap: 15px; min-height: 0; overflow: hidden; }
+        .main-content { display: flex; flex-direction: column; flex-grow: 1; gap: 15px; min-height: 0; overflow: hidden; }
+        .side-panel { width: 280px; flex-shrink: 0; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; max-height: 100%; }
         .panel-section { border: 1px solid var(--border-color); border-radius: 4px; padding: 10px; }
         .panel-section h3 { margin: 0 0 10px 0; font-size: 1em; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         button { background-color: var(--bg-lighter); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; }
@@ -34,7 +34,7 @@
         #svg-display { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         #svg-display.drawing-active { cursor: crosshair; }
         #svg-display svg { width: 100%; height: 100%; cursor: grab; }
-        .spreadsheet-container { height: 300px; flex-shrink: 0; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; display: flex; flex-direction: column;}
+        .spreadsheet-container { height: 250px; flex-shrink: 0; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; display: flex; flex-direction: column; overflow: hidden; }
         .spreadsheet-wrapper { overflow: auto; flex-grow: 1; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: left; font-size: 0.85em; white-space: nowrap; }
@@ -65,6 +65,7 @@
     </style>
 </head>
 <body>
+<!-- made by; KAROKH KAPPEN ARAF -->
 
     <div class="page-title">Karokh's TF-Extra replacement program</div>
 
@@ -138,11 +139,14 @@
                     <button id="export-approach-btn">Approach_Locking.txt</button>
                     <button id="export-shuntarea-btn">Shuntarea.txt</button>
                     <button id="export-levelcrossing-btn">Levelcrossing.txt</button>
+                    <button id="export-docx-btn">Download as DOCX</button>
                 </div>
             </div>
         </div>
     </div>
     </div>
+	
+	<!-- made by; KAROKH KAPPEN ARAF -->
 
     <div class="tab-content" id="pdf-viewer-tab">
         <div class="app-container">
@@ -174,6 +178,7 @@
         <button id="delete-col-btn">Delete Column</button>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- TAB NAVIGATION ---
@@ -670,6 +675,7 @@
             document.getElementById('export-approach-btn').addEventListener('click', () => exportToTxt('Approach_Locking.txt'));
             document.getElementById('export-shuntarea-btn').addEventListener('click', () => exportToTxt('Shuntarea.txt'));
             document.getElementById('export-levelcrossing-btn').addEventListener('click', () => exportToTxt('Levelcrossing.txt'));
+            document.getElementById('export-docx-btn').addEventListener('click', exportToDocx);
             document.getElementById('add-column-btn').addEventListener('click', addColumn);
             document.getElementById('import-txt-btn').addEventListener('click', () => document.getElementById('txt-import-loader').click());
             document.getElementById('txt-import-loader').addEventListener('change', importFromTxt);
@@ -827,6 +833,94 @@
             link.download = filename;
             link.click();
             URL.revokeObjectURL(link.href);
+        }
+        
+        async function exportToDocx() {
+            if (typeof docx === 'undefined') {
+                alert('DOCX library not loaded. Please refresh the page.');
+                return;
+            }
+
+            const { headers, rows } = getTableData();
+            
+            // Filter out empty rows
+            const nonEmptyRows = rows.filter(row => row.some(cell => cell.trim() !== ''));
+            
+            // Create table rows for docx
+            const tableRows = [
+                // Header row
+                new docx.TableRow({
+                    children: headers.map(header => 
+                        new docx.TableCell({
+                            children: [new docx.Paragraph({
+                                text: header,
+                                bold: true
+                            })],
+                            shading: {
+                                fill: "CCCCCC"
+                            }
+                        })
+                    ),
+                    tableHeader: true
+                }),
+                // Data rows
+                ...nonEmptyRows.map(row => 
+                    new docx.TableRow({
+                        children: row.map(cell => 
+                            new docx.TableCell({
+                                children: [new docx.Paragraph(cell || '')]
+                            })
+                        )
+                    })
+                )
+            ];
+
+            // Create table
+            const table = new docx.Table({
+                rows: tableRows,
+                width: {
+                    size: 100,
+                    type: docx.WidthType.PERCENTAGE
+                },
+                borders: {
+                    top: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                    bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                    left: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                    right: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                    insideHorizontal: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
+                    insideVertical: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }
+                }
+            });
+
+            // Create document
+            const doc = new docx.Document({
+                sections: [{
+                    properties: {},
+                    children: [
+                        new docx.Paragraph({
+                            text: "Railway Configurator - Data Export",
+                            heading: docx.HeadingLevel.HEADING_1,
+                            spacing: {
+                                after: 200
+                            }
+                        }),
+                        table
+                    ]
+                }]
+            });
+
+            // Generate and download
+            try {
+                const blob = await docx.Packer.toBlob(doc);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'railway_data_export.docx';
+                link.click();
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Error generating DOCX:', error);
+                alert('Error generating DOCX file. Check console for details.');
+            }
         }
         
         function importFromTxt(event) {
