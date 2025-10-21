@@ -9,6 +9,12 @@
             --bg-color: #2b2c2e; --bg-darker: #212223; --bg-lighter: #3c3f41;
             --border-color: #45494a; --text-color: #ccc; --accent-color: #ffc66d;
             --accent-hover: #ffd58a; --active-color: #82c91e;
+            
+            /* Sternol Visualizer Colors */
+            --color: #111;
+            --background: #fafafa;
+            --contrast-color: #e4e4e4;
+            --contrast-background: #354a5f;
         }
         body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-lighter); color: var(--text-color); }
         .page-title { background-color: var(--bg-darker); color: var(--accent-color); padding: 12px 20px; text-align: center; font-size: 1.3em; font-weight: bold; border-bottom: 2px solid var(--accent-color); }
@@ -16,7 +22,7 @@
         .tab-button { background-color: var(--bg-darker); color: var(--text-color); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 4px 4px 0 0; cursor: pointer; transition: all 0.2s; }
         .tab-button:hover { background-color: var(--bg-lighter); }
         .tab-button.active { background-color: var(--accent-color); color: #333; font-weight: bold; }
-        .tab-content { display: none; flex-grow: 1; min-height: 0; }
+        .tab-content { display: none; flex-grow: 1; min-height: 0; overflow-y: auto; }
         .tab-content.active { display: flex; }
         .app-container { display: flex; flex-grow: 1; padding: 15px; gap: 15px; min-height: 0; overflow: hidden; }
         .main-content { display: flex; flex-direction: column; flex-grow: 1; gap: 15px; min-height: 0; overflow: hidden; }
@@ -62,16 +68,89 @@
         .pdf-display { flex-grow: 1; overflow: auto; padding: 20px; display: flex; justify-content: center; align-items: flex-start; background-color: #525252; }
         .pdf-display canvas { box-shadow: 0 2px 10px rgba(0,0,0,0.5); max-width: 100%; height: auto; }
         .pdf-display iframe { width: 100%; height: 100%; border: none; background: white; }
+
+        /* Sternol Visualizer CSS */
+        .hidden { display: none !important; }
+        #sternol-visualizer-tab label { display: inline-grid; font-size: small; padding: .5em; }
+        kbd { background-color: #eee; border-radius: 3px; border: 1px solid #b4b4b4; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 2px 0 0 rgba(255, 255, 255, 0.7) inset; color: #333; display: inline-block; font-weight: 700; line-height: 1; padding: 2px 4px; white-space: nowrap; }
+        #sternol-visualizer-tab header { background-color: var(--contrast-background); padding: 0 .4em; }
+        #sternol-visualizer-tab header h1 { display: flex; align-items: center; font-size: 14pt; color: #fff; margin: 0px; }
+        #sternol-visualizer-tab header h1 label { font-weight: normal; }
+        #about { display: flex; justify-content: center; border: 2px solid var(--contrast-color); border-radius: 50%; align-content: center; width: 1.1em; height: 1.1em; margin-right: 2em; cursor: pointer; }
+        #sternol-visualizer-tab summary.title { font-size: 12pt; color: var(--contrast-color); background-color: var(--contrast-background); padding: 5px; margin: 0px; font-weight: bold; border-radius: 4px; }
+        #sternol-visualizer-tab output h1 { font-size: 14pt; color: var(--contrast-color); background-color: var(--contrast-background); padding: 5px; margin: 0px; }
+        #sternol-visualizer-tab output h2 { font-size: 12pt; color: #fff; background-color: rgb(8, 105, 153); padding: 5px; margin: 0px; }
+        .about { margin-top: 0.5em; }
+        #varDescOut details { padding-left: 4em; }
+        #varDescOut details summary { margin-left: -2em; }
+        #varDescOut > details { padding-left: 0; }
+        #varDescOut > details > summary { margin-left: 0; }
+        #varDescOut details div { border-bottom: 1px solid rgb(8, 105, 153); padding-bottom: 2em; padding-right: 2em; }
+        #sternol-visualizer-tab article { width: 90%; margin: auto; margin-top: 10px; }
+        #sternol-visualizer-tab table, #sternol-visualizer-tab td, #sternol-visualizer-tab th { border: 1px solid #1ba1e2; border-collapse: collapse; }
+        #sternol-visualizer-tab th { background-color: rgb(143, 205, 236); }
+        #sternol-visualizer-tab tr:nth-child(even) { background-color: #f2f2f2; }
+        #sternol-visualizer-tab tr:nth-child(odd) { background-color: #e9e9e9; }
+        #sternol-visualizer-tab tr:hover { background-color: #f5f5f5; }
+        #sternol-visualizer-tab output { color: var(--color); margin: auto; margin-top: 10px; padding: 10px; border: 1px solid var(--contrast-background); border-radius: 4px; display: none; }
+        #sternol-visualizer-tab input { border: 1px solid var(--contrast-background); border-radius: 4px; margin-top: 2px; padding: 5px 5px; }
+        #sternol-visualizer-tab input:focus { outline: none; }
+        #sternol-visualizer-tab input[type="file"] { border: none; background-color: var(--contrast-background); color: var(--contrast-color); text-decoration: none; border-radius: 4px; cursor: pointer; }
+        #sternol-visualizer-tab input[type="button"] { background-color: var(--contrast-background); border: none; border-radius: 4px; color: var(--contrast-color); padding: 10px 10px; text-decoration: none; margin: 4px 2px; cursor: pointer; }
+        #eqsimVars { display: block; }
+        .button_result_true { background-color: #00ff00; border: none; padding: 0px 0px; text-align: center; text-decoration: none; }
+        .button_result_false { background-color: #ffaaaa; border: none; padding: 0px 0px; text-align: center; text-decoration: none; }
+        .button_result_other { background-color: #aaaaaa; border: none; padding: 0px 0px; text-align: center; text-decoration: none; }
+        .button_result_value { background-color: #ffffff; border: none; padding: 0px 0px; text-align: center; text-decoration: none; }
+        .sidenav { height: 100%; width: 0; position: fixed; z-index: 1; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.1s; }
+        .sidenav a { text-decoration: none; font-size: 24px; display: block; }
+        .sidenav a:hover { color: #f1f1f1; }
+        .sidenav pre { white-space: pre-line; margin-top: .5em; }
+        .sidenav h3 { margin-top: 0; }
+        .newTabBtn { padding: 0; }
+        .newTabBtn:hover { cursor: pointer; }
+        .sidenav { font-size: 16px; }
+        #plotDivDetail { padding-left: 1.5em; }
+        #plotDivDetail table { margin: 0 2em 0 2em; }
+        @media screen and (max-height: 450px) { .sidenav { padding-top: 15px; } .sidenav a { font-size: 18px; } }
+        #sternol-visualizer-tab p { padding: 0 2em 0 2em; }
+        .warningmsg { font-size: 20px; font-weight: bold; color: #1ba1e2; background-color: #f7cac9; vertical-align: center; text-align: center; }
+        #sternol-visualizer-tab .context-menu { position: absolute; text-align: center; background: white; border: 1px solid grey; display: none; z-index: 10; font-size: 14px; }
+        #sternol-visualizer-tab .context-menu ul { padding: 0px; margin: 0px; min-width: 150px; list-style: none; }
+        #sternol-visualizer-tab .context-menu ul li { padding-bottom: 7px; padding-top: 7px; cursor: pointer; }
+        #sternol-visualizer-tab .context-menu ul li:hover { background: darkgray; }
+        .tool-tip { z-index: 10; position: absolute; visibility: hidden; opacity: 0; transition: opacity 0.5 ease-in; border: 1px solid black; box-shadow: 0 0 6px black; padding: 1em 2em 1em 2em; width: 45vw; font-family: sans-serif; background-color: white; color: var(--color); }
+        .tool-tip:hover { visibility: visible; opacity: 1; }
+        .tool-tip h3 { margin-top: 0; margin-left: -1em; }
+        .tool-tip h4 { margin-bottom: 0; margin-left: -1em; }
+        .tool-tip table { margin-top: 0.8em; }
+        .tool-tip table tr td { vertical-align: top; padding: 0.2em; width: 100%; }
+        .tool-tip table tr td:first-child { width: 7%; padding-right: 1em; }
+        #sternol-visualizer-tab ul, #myUL { list-style-type: none; }
+        #myUL { margin: 0; padding: 0; }
+        .nested { display: none; }
+        .variable { display: flex; justify-content: space-between; cursor: pointer; max-width: 50em; }
+        .active { display: block; }
+        .badgeName { background: #888; color: white; padding: 2px 8px 2px 4px; border: 1px solid black; border-right: 0; border-radius: 5px 0 0 5px; }
+        .badgeValue { background: #f2f2f2; color: black; padding: 2px 4px 2px 8px; border: 1px solid black; border-left: 0; border-radius: 0 5px 5px 0; display: inline-block; width: 11em; margin-right: 2em; }
+        .badgeValue--small { width: 4em; }
+        .overview > span { display: inline-block; width: 19em; }
+        .overview > span:first-child { width: 14em; }
+        .objectRow { width: 50em; display: inline-flex; justify-content: space-between; }
+        #sternol-visualizer-tab .title input { margin: 0; }
+        #sternol-visualizer-tab .title span { display: inline-flex; align-items: center; column-gap: 8px; }
+        .lds-dual-ring { visibility: hidden; display: flex; justify-content: center; align-items: center; color: white; font-size: 2em; position: fixed; top: 0; left: 0; background-color: rgba(0, 0, 0, 0.2); width: 100%; height: 100%; z-index: 2000;}
+        .lds-dual-ring:after { content: " "; display: block; width: 64px; height: 64px; margin: 8px; border-radius: 50%; border: 10px solid #fff; border-color: white transparent whitesmoke transparent; animation: lds-dual-ring 1.2s linear infinite; }
+        @keyframes lds-dual-ring { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-<!-- made by; KAROKH KAPPEN ARAF -->
-
-    <div class="page-title">Karokh's TF-Extra replacement program</div>
+<div class="page-title">Karokh's TF-Extra replacement program</div>
 
     <div class="tab-navigation">
         <button class="tab-button active" data-tab="configurator">Railway Configurator</button>
         <button class="tab-button" data-tab="pdf-viewer">Sternol.pdf viewer</button>
+        <button class="tab-button" data-tab="sternol-visualizer">Sternol Visualizer</button>
     </div>
 
     <div class="tab-content active" id="configurator-tab">
@@ -146,9 +225,7 @@
     </div>
     </div>
 	
-	<!-- made by; KAROKH KAPPEN ARAF -->
-
-    <div class="tab-content" id="pdf-viewer-tab">
+	<div class="tab-content" id="pdf-viewer-tab">
         <div class="app-container">
             <div class="pdf-viewer-container" style="flex-grow: 1;">
                 <div class="pdf-toolbar">
@@ -173,6 +250,325 @@
         </div>
     </div>
 
+    <div class="tab-content" id="sternol-visualizer-tab">
+        <div style="width: 100%; background-color: var(--background); color: var(--color);">
+            <header>
+                <h1>
+                    <span>Sternol Visualizer</span>
+                    <span style="flex: 2"></span>
+                    <output style="margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: space-evenly; align-items: center; color: var(--color);">
+                    <label title="Upload code coverage (.cov), STERNOL (.ste) or counter model file (.cmo) for analysis">
+                        Sternol/Coverage/Counter model File <input id="sternolFile" type="file" accept=".cov,.ste,.SternolFile,.cmo,.dnf,.bcov" />
+                    </label>
+                    <label title="Upload variable description file for objects (.txt)">
+                        Description File <input id="descFile" type="file" accept=".txt,.SternolDescrFile" />
+                    </label>
+                    <label>Open diagrams in new tab<input type="checkbox" id="new-tab-mode-input" /></label>
+                    </output>
+                    <span style="flex: 2"></span>
+                    <span id="about" onclick="document.getElementById('JtOut').showModal()">?</span>
+                </h1>
+
+                <dialog id="JtOut">
+                    <span style="float:right;font-size:24px;cursor:pointer" onclick="event.target.parentElement.close()">&times;</span>
+                    <h2>Tool Justification for 50128:2011 Compliance</h2>
+                    <table>
+                    <tr>
+                        <th align="left">Classification</th>
+                        <td align="left">T2</td>
+                    </tr>
+                    <tr>
+                        <th align="left">Usage</th>
+                        <td align="left">
+                        Visualizer web browser application that is an HTML file with
+                        programs written in JavaScript. The web application provides
+                        an interface to:
+                        <ul>
+                            <li>Select and import Sternol file or code coverage data file generated by EQSIM_E.</li>
+                            <li>Graphically view Sternol code or code coverage results as Sternol variable diagrams.</li>
+                            <li>Export code coverage result data to CSV or HTML file. </li>
+                            <li>Connect to a running EQSIM_E to visualize Sternol variable states. </li>
+                        </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left">Possible Failure Effects</th>
+                        <td align="left">
+                        This application may generates incorrect data to CSV file.
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left">Migrations</th>
+                        <td align="left">
+                        Possible errors by the T2 tools are prevented or found during:
+                        <ul>
+                            <li>Educated personnel.</li>
+                            <li>System tests.</li>
+                            <li>Reviews and verification activities.</li>
+                            <li>Test result is checked before release</li>
+                        </ul>
+                        </td>
+                    </tr>
+                    </table>
+                    <h2>About</h2>
+                    <table>
+                    <tr>
+                        <th align="left">Version</th>
+                        <td align="left" id="toolVersion"></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Change Log</th>
+                        <td align="left">
+                        <ul>
+                            <li>Add support for modes as defined by EQSIM_E</li>
+                            <li>Store list of previously entered EQSIM_E host names</li>
+                            <li>Accept <code>.dnf</code> and <code>.bcov</code> files</li>
+                            <li>Add EQSIM_E websocket connection</li>
+                            <li>Possible to generate coverage html report</li>
+                            <li>
+                            Variable plot can be opened in a new window, either by
+                            right clicking the variable in the list and choosing
+                            "open in new tab" in the context menu, or by using the
+                            new top right button on the plot itself
+                            </li>
+                            <li>
+                            Added support for uploading and parsing STERNOL (.ste)
+                            file without code coverage information
+                            </li>
+                            <li>
+                            Add ability to upload variable description .txt file
+                            which enables variable description tooltips when
+                            hovering the mouse over variable names
+                            </li>
+                            <li>
+                            Changed code coverage badge rendering logic resulting in
+                            8x faster load time
+                            </li>
+                            <li>Variable descriptions can be opened in new window</li>
+                            <li>remove SCC functionalities</li>
+                        </ul>
+                        </td>
+                    </tr>
+                    </table>
+                </dialog>
+            </header>
+            <article>
+                <div class="context-menu" id="contextMenuSternol">
+                    <ul>
+                    <li>open in new tab</li>
+                    </ul>
+                </div>
+
+                <div class="tool-tip"></div>
+
+                <output id="varDescOut">
+                    <details>
+                    <summary class="title">
+                        Variable Descriptions
+                    </summary>
+                    <label title="F1 - Search descriptions"><span>Object/variable search
+                        (<kbd>F1</kbd>)</span>
+                        <input
+                        type="search"
+                        id="obj-var-filter"
+                        placeholder="Filter results..."
+                        aria-label="Filter objects and variables"
+                        oninput="filterVarDesc()"
+                        />
+                        <script type="text/javascript">
+                        const details_f1 = document.querySelector("#varDescOut > details");
+                        const search_f1 = document.getElementById("obj-var-filter");
+                        window.addEventListener("keydown", e => {
+                            if (e.key === "F1") {
+                            e.preventDefault();
+                            closePlot();
+                            details_f1.open = true;
+                            search_f1.focus();
+                            search_f1.select("");
+                            }
+                        });
+                        </script>
+                    </label>
+                    </details>
+                </output>
+
+                <output id="statOut">
+                    <details>
+                    <summary class="title" id="diagrams-title">Variable Diagrams</summary>
+                    <details id="coverage-report-details">
+                        <summary>Coverage Report</summary>
+                        <div style="display: flex;">
+                        <label>Title
+                            <input id="reportTitle" type="text" placeholder="Title" />
+                        </label>
+                        <label>Document number
+                            <input
+                            id="reportDocNumber"
+                            type="text"
+                            placeholder="Document number"
+                            />
+                        </label>
+                        <label>Document version
+                            <input
+                            id="reportDocVersion"
+                            type="text"
+                            placeholder="Document version"
+                            />
+                        </label>
+                        <label>Include diagrams
+                            <input id="reportIncludePlots" type="checkbox" />
+                        </label>
+                        <input
+                            type="button"
+                            onclick="createReportAndDownload()"
+                            value="Generate HTML report"
+                            />
+                        </div>
+                        <div>
+                        <input
+                            type="button"
+                            onclick="generateCovList()"
+                            value="Generate CSV report"
+                            />
+                        </div>
+                    </details>
+                    <div style="display: flex; justify-content: space-evenly; padding: 1em;">
+                        <label title="F2 - Search objects and variable names" style="flex: 2">
+                        <span>Search (<kbd>F2</kbd>)</span>
+                        <div class="filters">
+                            <input id="objVarSearch"
+                                type="search"
+                                placeholder="Object name..."
+                                oninput="filterVar()"
+                                />
+                            <input id="objVarSearch2"
+                                type="search"
+                                placeholder="Variable name..."
+                                oninput="filterVar()"
+                                /> 
+                        </div>      
+                        </label>
+                        <label id="coverage-filter" title="Filter out variables with coverage above this limit">
+                        <span>Filter: %coverage &le;</span>
+                        <input id="CovCriteriaNum"
+                                type="number"
+                                min="0"
+                                max="100"
+                                value="100"
+                                placeholder="Filter Coverage percentage"
+                                />
+                        </label>
+                        <script>
+                        window.addEventListener("keydown", e => {
+                            if (e.key === "F2") {
+                            e.preventDefault();
+                            const search = document.querySelector("#objVarSearch");
+                            search.focus();
+                            search.select("");
+                            }
+                        });
+                        </script>
+
+                    </div>
+                    <div id="statDetail"></div>
+                    </details>
+                </output>
+
+                <output id="eqsimVars">
+                    <details>
+                    <summary class="title">
+                        EQSIM_E/Live ILL
+                        <span
+                        ><input list="eqsimHostList" id="eqsimHost" type="search" placeholder="<host>[:<port>]" style="width: 28ch" />
+                        <input
+                            id="eqsimPort"
+                            type="text"
+                            placeholder="<port>"
+                            style="width: 7ch"
+                        />
+                        <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="10" cy="10" r="10" fill="white" />
+                            <circle id="connectedCircle" cx="10" cy="10" r="8" fill="red" />
+                        </svg>
+                        <button id="eqsimBtn" onclick="eqsimConnect()">
+                            Connect
+                        </button></span
+                        >
+                    </summary>
+                    <label title="F3 - Search EQSIM_E objects and variables"><span>Object/variable search
+                        (<kbd>F3</kbd>)</span>
+                        <div class="filters">
+                            <input
+                            type="search"
+                            id="eqsime-obj-var-filter"
+                            placeholder="Object name..."
+                            oninput="filterEqsimeVar()"
+                            />
+                            <input
+                            type="search"
+                            id="eqsime-obj-var-filter2"
+                            placeholder="Variable name..."
+                            oninput="filterEqsimeVar()"
+                            />
+                        </div>  
+                        <script type="text/javascript">
+                        window.addEventListener("keydown", e => {
+                            if (e.key === "F3") {
+                            e.preventDefault();
+                            const search = document.querySelector("#eqsime-obj-var-filter");
+                            search.focus();
+                            search.select("");
+                            }
+                        });
+                        </script>
+                    </label>
+                    <div id="eqsim_vars"></div>
+                    </details>
+                    <datalist id="eqsimHostList"></datalist>
+                </output>
+
+                <div
+                    id="plotDiv"
+                    class="sidenav"
+                    style="
+                    background-color: lightgray;
+                    overflow: auto;
+                    overflow-x: auto;
+                    height: 90%;
+                    "
+                >
+                    <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        margin: 0 .5em 0 .5em;
+                        align-items: center;
+                    "
+                    >
+                    <script>window.addEventListener("keydown", e => e.key === "Escape" ? closePlot() : null);</script>
+                    <a href="javascript:closePlot()"  title="Esc - Close the variable" class="closebtn" style="color: black"
+                        >&larr; <kbd style="font-size: 0.6em">Esc</kbd></a>
+
+                    <div id="momentaryOrCoverage">
+                        <label>Momentary<input type="radio" name="coverage" value="standard-momentary"></label>
+                        <label>Momentary with values<input type="radio" name="coverage" value="standard-momentary_with_values"></label>
+                        <label>Coverage<input type="radio" name="coverage" value="standard-coverage"></label>
+                        <label>Momentary (branch)<input type="radio" name="coverage" value="branch-momentary"></label>
+                        <label>Momentary with values (branch)<input type="radio" name="coverage" value="branch-momentary_with_values"></label>
+                        <label>Coverage (branch)<input type="radio" name="coverage" value="branch-coverage"></label>
+                    </div>
+
+                    <div class="newTabBtn">
+                    </div>
+                    </div>
+                    <div id="plotDivDetail"></div>
+                </div>
+            </article>
+
+            <div id="spinner" class="lds-dual-ring">Loading...</div>
+        </div>
+    </div>
+
     <div class="context-menu" id="context-menu">
         <button id="delete-row-btn">Delete Row</button>
         <button id="delete-col-btn">Delete Column</button>
@@ -180,17 +576,831 @@
 
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
     <script>
+    // --- RAILROAD DIAGRAM SCRIPT ---
+    function* railroadLex(equation) {
+        for (let i = 0; i < equation.length; ++i) {
+            let n = 0, j = i;
+            switch (equation[i]) {
+            case "+": case "*": case ")":
+                yield equation[i];
+                break;
+            case "(": default:
+                for (; j < equation.length; ++j) {
+                    const c = equation[j];
+                    if (c === "+" || c === "*") { break; }
+                    if (c === "(")              { n++;   }
+                    if (c === ")")              { n--;   }
+                }
+                if (n > 0) {
+                    for (; n; --n) { yield equation[i++]; }
+                }
+                j += n;
+                while (equation[i] === "(" && equation[j - 1] === ")") {
+                    yield equation[i++];
+                    j--;
+                }
+                if (j > i) {
+                    yield equation.slice(i, j).replace(/^([[{]?)\d+#/, "$1");
+                }
+                i = j - 1;
+                break;
+            }
+        }
+    }
+    function railroadStats(equation) {
+        let conditions = 0, tested = 0;
+        for (const token of railroadLex(equation)) {
+            if (token.length == 1) {
+                switch (token[0]) {
+                case "*": case "+": case "(": case ")": break;
+                default: ++conditions;
+                }
+            } else {
+                ++conditions;
+                if (token[0] == "{" || token[0] == "|") { ++tested; }
+            }
+        }
+        return { condCount: conditions, testedCondCount: tested };
+    }
+    function railroadSvgDiagramCreate(parent, name, equation) {
+        "use strict";
+        function element(tag, attributes={}) {
+            const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+            for (const [k, v] of Object.entries(attributes)) {
+                switch (k) {
+                case "_append":  v.appendChild(e);     break;
+                case "_prepend": v.prepend(e);         break;
+                case "_text":    e.textContent = v;    break;
+                default:         e.setAttribute(k, v); break;
+                }
+            }
+            return e;
+        }
+        const font = "12px sans-serif";
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.font = font;
+        const textWidth = (text) => Math.ceil(ctx.measureText(text).width);
+        const textAsDc = ctx.measureText("|");
+        const textAscent = textAsDc.actualBoundingBoxAscent;
+        const textDescent = textAsDc.actualBoundingBoxDescent;
+        const textHeight = textAscent + textDescent;
+        const textHalf = Math.round(textHeight / 2);
+        const spacing = 20;
+        const padding = 5;
+        const svg = element("svg", { "class": "svg-railroad-diagram" });
+        const g = element("g", { _append: svg, transform: "translate(.5 .5)" });
+        const stack = [{x: 0, y: 0, ys: [], originx: 0, originy: 0, maxx: 0, maxy: 0}];
+        const move = (dx, dy) => {
+            const sp = stack[stack.length - 1];
+            if (dx) { sp.x += dx; sp.maxx = Math.max(sp.maxx, sp.x); }
+            if (dy) { sp.y += dy; sp.ys.push(sp.y); sp.maxy = Math.max(sp.maxy, sp.y); }
+        };
+        move(spacing, spacing);
+        for (const tok of railroadLex(name + "*(" + equation + ")")) {
+            const sp = stack[stack.length - 1];
+            switch (tok) {
+            case "(":
+                stack.push({x: sp.x, y: sp.y, ys: [], originx: sp.x, originy: sp.y, maxx: sp.x, maxy: sp.y});
+                move(spacing, 0);
+                break;
+            case ")":
+                for (const row of sp.ys) {
+                    element("line", { _prepend: g, x1: sp.originx, y1: row + textHalf, x2: sp.maxx, y2: row + textHalf });
+                }
+                if (sp.ys.length) {
+                    element("line", { _prepend: g, x1: sp.originx, y1: sp.originy + textHalf, x2: sp.originx, y2: sp.ys[sp.ys.length - 1] + textHalf });
+                    element("line", { _prepend: g, x1: sp.maxx, y1: sp.originy + textHalf, x2: sp.maxx, y2: sp.ys[sp.ys.length - 1] + textHalf });
+                }
+                stack.pop();
+                move(sp.maxx - sp.originx + spacing, 0);
+                stack[stack.length - 1].maxy = Math.max(stack[stack.length - 1].maxy, sp.maxy);
+                break;
+            case "*": break;
+            case "+":
+                sp.x = sp.originx;
+                move(spacing, sp.maxy - sp.y + textHeight + spacing);
+                break;
+            default:
+                let attrs;
+                if (tok[0] == "{") { attrs = { _text: tok.slice(1, -1), "class": "green"}; }
+                else if (tok[0] == "[") { attrs = { _text: tok.slice(1, -1), "class": "red"}; }
+                else if (tok[0] == "|") { attrs = { _text: tok.slice(1, -1), "class": "yellow"}; }
+                else { attrs = { _text: tok }; }
+                element("rect", { _prepend: g, x: sp.x - padding, y: sp.y - padding, width: textWidth(attrs._text) + 2*padding, height: textHeight + 2*padding, ...attrs });
+                element("text", { _append: g, _text: attrs._text, x: sp.x, y: sp.y + textAscent });
+                move(textWidth(attrs._text) + spacing, 0);
+                break;
+            }
+        }
+        element("line", { _prepend: g, x1: spacing, y1: spacing + textHalf, x2: stack[0].maxx, y2: spacing + textHalf });
+        element("line", { _prepend: g, x1: stack[0].maxx, y1: spacing - padding + 3, x2: stack[0].maxx, y2: spacing + textHeight + padding - 2 });
+        element("style", { _prepend: svg, _text: [`text {font: ${font};}`, "line {stroke: black; stroke-width: 3; stroke-linecap: round;}", "rect {fill: white; rx: 6px; stroke: black; stroke-width: 3;}", ".red {fill: tomato;}", ".green {fill: palegreen;}", ".yellow {fill: gold;}"].join("") });
+        const w = stack[0].maxx + spacing;
+        const h = stack[0].maxy + textHeight + spacing;
+        svg.setAttribute("width", w);
+        svg.setAttribute("height", h);
+        svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        parent.appendChild(svg);
+        return svg;
+    }
+    
+    // --- START OF COMBINED JS FILES ---
+
+    // From: variableDescriptions.js
+    let variableDesc;
+    function getShortDescription(variableDesc, objName, varName) {
+      try { return variableDesc[objName][varName].ShortDescription; } catch (_error) {}
+      try { return variableDesc["globals"][varName.split("(")[0]].ShortDescription; } catch (_error) {}
+      return "n/a";
+    }
+    function getLongDescription(variableDesc, objName, varName) {
+      try { return variableDesc[objName][varName].LongDescription; } catch (_error) {}
+      try { return variableDesc["globals"][varName.split("(")[0]].LongDescription; } catch (_error) {}
+      return "n/a";
+    }
+    function getValuesDescription(variableDesc, objName, varName) {
+      try { return variableDesc[objName][varName].ValueDescription; } catch (_error) {}
+      try { return variableDesc["globals"][varName.split("(")[0]].ValueDescription; } catch (_error) {}
+      return [];
+    }
+    function getValueDescription(variableDesc, objName, varName, valueName) {
+      let vs = getValuesDescription(variableDesc, objName, varName);
+      for (let [k, v] of vs) { if (k === valueName) { return v; } }
+      return "n/a";
+    }
+    function openDescInNewTab(event) {
+      event.preventDefault();
+      let newWin = window.open();
+      if (!newWin) { alert("Pop-up protection prevents opening variable in new tab"); return; }
+      let varDescOut = document.querySelector("#varDescOut");
+      newWin.document.write("<!DOCTYPE html><html><head>");
+      newWin.document.write('<style>/* All merged CSS will be here */</style>'); // Placeholder
+      newWin.document.write("<title>Descriptions</title></head><body>");
+      newWin.document.write(varDescOut.outerHTML);
+      newWin.document.write("</body></html>");
+      newWin.document.close();
+      newWin.onload = function () {
+        const details = newWin.document.querySelector("#varDescOut > details");
+        const search = newWin.document.getElementById("obj-var-filter");
+        newWin.addEventListener("keydown", e => { if (e.key === "F1") { e.preventDefault(); details.open = true; search.focus(); search.select(""); } });
+        let rootDescSummary = newWin.document.querySelector("#obj-var-filter");
+        while (rootDescSummary.nextElementSibling) { rootDescSummary.parentElement.removeChild(rootDescSummary.nextElementSibling); }
+        displayDescriptions(newWin);
+        const descDetails = newWin.document.querySelector("#varDescOut > details");
+        descDetails.open = true;
+      }
+    }
+    function displayDescriptions(currentWindow) {
+      const descDetails = currentWindow.document.querySelector("#varDescOut > details");
+      const container = currentWindow.document.createElement("div");
+      for (const objName in variableDesc) {
+        const objDetails = currentWindow.document.createElement("details");
+        const objSummary = currentWindow.document.createElement("summary");
+        objSummary.textContent = objName;
+        objDetails.appendChild(objSummary);
+        container.appendChild(objDetails);
+        for (const varName in variableDesc[objName]) {
+          const descriptionContainer = currentWindow.document.createElement("div");
+          const varDetails = currentWindow.document.createElement("details");
+          const varSummary = currentWindow.document.createElement("summary");
+          varSummary.textContent = varName + " - " + getShortDescription(variableDesc, objName, varName);
+          varDetails.appendChild(varSummary);
+          varDetails.appendChild(descriptionContainer);
+          varDetails.ontoggle = () => { if (!descriptionContainer.hasChildNodes()) { populateParent(descriptionContainer, variableDesc, objName, varName, currentWindow); } };
+          objDetails.appendChild(varDetails);
+        }
+      }
+      if (descDetails.lastChild) { descDetails.removeChild(descDetails.lastChild); }
+      descDetails.appendChild(container);
+      currentWindow.document.querySelector("#varDescOut").style.display = "block";
+    }
+    function parseDescFile(data) {
+        const GLOBAL_RE = /^!\s*GLOBAL VARIABLES:/; const VAR_RE = /^([A-Z][A-Z _\d]*);/; const DESC_RE = /^!GLE (\w+Description): "(.*)";/;
+        const DEF_OBJ_TYPE = /^!\s*DEFINITION OF OBJECT TYPES:/; const DEF_DESC_RE = /^!GLE Description: "([\w -_\d]+)";/;
+        const OBJECT_TYPE_RE = /^!.*OBJECTTYPE: "?([A-Z _\d]*)/; const VALUE_DESC_RE = /^!GLE ValueDescription: "(.*)";/;
+        let variableDesc = {}; let currentVar; let currentObj;
+        for (let line of data.split("\n")) {
+            let match = OBJECT_TYPE_RE.exec(line); if (match) { let [_, objType] = match; variableDesc[objType] = {}; currentObj = variableDesc[objType]; continue; }
+            match = GLOBAL_RE.exec(line); if (match) { variableDesc.globals = {}; currentObj = variableDesc.globals; continue; }
+            match = DEF_OBJ_TYPE.exec(line); if (match) { variableDesc.definitions = {}; currentObj = variableDesc.definitions; continue; }
+            match = DEF_DESC_RE.exec(line); if (match) { let [_, value] = match; currentVar.ShortDescription = value; continue; }
+            match = VAR_RE.exec(line); if (match) { let newVar = match[1]; currentObj[newVar] = {}; currentVar = currentObj[newVar]; continue; }
+            match = VALUE_DESC_RE.exec(line); if (match) {
+                let [_, valueLine] = match; let kvPairs = valueLine.split("|-|"); kvPairs.pop();
+                for (let kvPair of kvPairs) { if (!currentVar.ValueDescription) { currentVar.ValueDescription = [kvPair.split("|")]; continue; } currentVar.ValueDescription.push(kvPair.split("|")); } continue;
+            }
+            match = DESC_RE.exec(line); if (match) { let [_, descType, desc] = match; currentVar[descType] = desc ? desc : ""; }
+        } return variableDesc;
+    }
+    function populateParent(parent, variableDesc, objName, varSteStr, win) {
+        const shortDescTitle = win.document.createElement("h3");
+        shortDescTitle.textContent = getShortDescription(variableDesc, objName, varSteStr) + ` (${varSteStr})`;
+        parent.appendChild(shortDescTitle);
+        const valuesTitle = win.document.createElement("h4"); valuesTitle.textContent = "Values"; parent.appendChild(valuesTitle);
+        const table = win.document.createElement("table");
+        const createTd = (val) => { const td = win.document.createElement("td"); td.textContent = val; return td; };
+        for (let [key, val] of getValuesDescription(variableDesc, objName, varSteStr)) {
+            const tr = win.document.createElement("tr"); tr.appendChild(createTd(key)); tr.appendChild(createTd(val)); table.appendChild(tr);
+        }
+        parent.appendChild(table);
+        const longDescTitle = win.document.createElement("h4"); longDescTitle.textContent = "Description"; parent.appendChild(longDescTitle);
+        for (const paragraph of getLongDescription(variableDesc, objName, varSteStr).split("@")) {
+            if (!paragraph) { continue; } const p = win.document.createElement("p"); p.textContent = paragraph; parent.appendChild(p);
+        }
+    }
+    function filterVarDesc() {
+        const filter = document.querySelector("#obj-var-filter"); let filterText = filter.value.toLowerCase(); const caseInsensitive = filterText === filter.value;
+        if (!caseInsensitive) { filterText = filter.value; }
+        const matchingObjs = []; let numMatchingVars = 0;
+        for (let obj of filter.parentElement.parentElement.querySelectorAll(":scope > div > details")) {
+            obj.open = false; const objText = caseInsensitive ? obj.firstChild.textContent.toLowerCase() : obj.firstChild.textContent;
+            if (!objText.includes(filterText)) {
+                let pushedObj = false; obj.style.display = "none";
+                for (let variable of obj.children) {
+                    if (variable.tagName === "SUMMARY") { continue; }
+                    const varText = caseInsensitive ? variable.firstChild.textContent.toLowerCase() : variable.firstChild.textContent;
+                    if (varText.includes(filterText)) {
+                        if (!pushedObj) { matchingObjs.push(obj); pushedObj = true; } numMatchingVars++;
+                        obj.style.display = "block"; variable.style.display = "block";
+                    } else { variable.style.display = "none"; }
+                }
+            } else {
+                matchingObjs.push(obj); numMatchingVars += obj.querySelectorAll("details").length; obj.style.display = "block";
+                for (let variable of obj.children) { if (variable.tagName === "SUMMARY") { continue; } variable.style.display = "block"; }
+            }
+        }
+        if (matchingObjs.length === 1 || numMatchingVars < 20) { for (const obj of matchingObjs) { obj.open = true; } }
+    }
+    function filterVar() {
+        const ul = document.getElementById("objList"); const objFilter = document.getElementById("objVarSearch"); const varFilter = document.getElementById("objVarSearch2");
+        filterTree(ul, objFilter.value, varFilter.value);
+    }
+
+    // From: contextmenu.js
+    function openInNewTab(objSteStr, varSteStr, sternolData = null) {
+      let newWin = window.open(); if (!newWin) { alert("Pop-up protection prevents opening variable in new tab"); return; }
+      let plotDiv = document.querySelector("#plotDiv").innerHTML;
+      newWin.document.write("<!DOCTYPE html><html><head>");
+      newWin.document.write('<style>/* All merged CSS will be here */</style>'); // Placeholder
+      newWin.document.write(`<title>${objSteStr}: ${varSteStr}</title></head><body style="background-color: lightgray;">`);
+      newWin.document.write(plotDiv);
+      // Ensure tooltip and contextMenu elements exist before trying to access outerHTML
+      if (document.querySelector('.tool-tip')) newWin.document.write(document.querySelector('.tool-tip').outerHTML);
+      if (document.getElementById('contextMenuSternol')) newWin.document.write(document.getElementById('contextMenuSternol').outerHTML);
+      newWin.document.write("</body></html>");
+      newWin.document.close();
+      newWin.onload = function () {
+        newWin.addEventListener("popstate", e => {
+          if (!e.state) return;
+          if (e.state.length == 2) {
+            const [objName, variable] = e.state; let data = sternolData ? sternolData : sternolGlobal;
+            plot(data, objName, variable, newWin);
+          } else if (e.state.length == 3) {
+            const [ilsName, objName, varName] = e.state;
+            eqsimeWindowUnsubscribe(newWin); eqsimeOpenInSameWindow(ilsName, objName, varName, newWin);
+          }
+        });
+        newWin.history.pushState([objSteStr, varSteStr], "");
+        let closebtn = newWin.document.querySelector(".closebtn"); closebtn.style.display = "none";
+        let newTabBtn = newWin.document.querySelector(".newTabBtn"); newTabBtn.style.display = "none";
+        if (sternolData) { plot(sternolData, objSteStr, varSteStr, newWin); }
+      };
+      return newWin;
+    }
+    function showContextMenu(event, objSteStr, varSteStr, name, onclickCb, currentWindow = null) {
+      if (!currentWindow) { currentWindow = this; }
+      let ctx = currentWindow.document.getElementById("contextMenuSternol");
+      ctx.firstElementChild.firstElementChild.textContent = name;
+      ctx.objSteStr = objSteStr; ctx.varSteStr = varSteStr; ctx.style.display = "block";
+      ctx.style.left = event.pageX + "px"; ctx.style.top = event.pageY + "px";
+      ctx.onmouseleave = () => { ctx.style.display = "none"; }
+      ctx.onclick = () => { onclickCb(); };
+    }
+
+    // From: treefilter.js
+    "use strict";
+    function _parentTag(e, tag) { while (1) { if (e.tagName === tag) { return e; } e = e.parentElement; } }
+    function _hide(e) { e.classList.add("hidden"); }
+    function _show(e) { e.classList.remove("hidden"); }
+    function filterTree(ul, objPattern, varPattern) {
+        objPattern = objPattern.toLowerCase(); varPattern = varPattern.toLowerCase();
+        for (const objName of ul.querySelectorAll(".objName")) {
+            const details = _parentTag(objName, "DETAILS"); const li = _parentTag(details, "LI");
+            if (objPattern && !objName.textContent.toLowerCase().includes(objPattern)) { _hide(li); continue; }
+            const vars = details.querySelectorAll(".varName");
+            if (!varPattern) {
+                details.open = false;
+                for (const varName of vars) { for (const variable of vars) { _show(_parentTag(varName, "LI")); } }
+                _show(li); continue;
+            }
+            _hide(li);
+            for (const varName of vars) {
+                if (!varName.textContent.toLowerCase().includes(varPattern)) { _hide(_parentTag(varName, "LI")); continue; }
+                _show(li); details.open = true; _show(_parentTag(varName, "LI"));
+            }
+        }
+    }
+
+    // From: tooltip.js
+    let _tooltipElement, _tooltipX, _tooltipY, _tooltipTimeoutVar, _tooltipTargetElement;
+    function updateTooltipCoords(event) { _tooltipX = event.pageX + 5; _tooltipY = event.pageY; _tooltipTargetElement = event.target; }
+    function startTooltipTimer(variableDesc, objName, varSteStr, win) {
+      _tooltipElement = win.document.querySelector(".tool-tip");
+      _tooltipTimeoutVar = setTimeout(() => {
+        if (!variableDesc || !objName) { return; }
+        _tooltipElement.style.visibility = "visible"; _tooltipElement.style.opacity = 1;
+        const rect = _tooltipTargetElement.getBoundingClientRect();
+        if (_tooltipX < win.innerWidth / 2) { _tooltipElement.style.left = rect.right + "px"; }
+        else { _tooltipElement.style.left = rect.left - _tooltipElement.clientWidth + "px"; }
+        removeElementChildren(_tooltipElement);
+        populateParent(_tooltipElement, variableDesc, objName, varSteStr, win);
+        _tooltipElement.style.top = Math.max(_tooltipY - _tooltipElement.clientHeight / 2, win.scrollY) + "px";
+      }, 350);
+    }
+    function startTooltipTimerValue(variableDesc, objName, varSteStr, value, win) {
+      _tooltipElement = win.document.querySelector(".tool-tip");
+      _tooltipTimeoutVar = setTimeout(() => {
+        if (!variableDesc) { return; }
+        _tooltipElement.style.visibility = "visible"; _tooltipElement.style.opacity = 1;
+        const rect = _tooltipTargetElement.getBoundingClientRect();
+        if (_tooltipX < win.innerWidth / 2) { _tooltipElement.style.left = rect.right + "px"; }
+        else { _tooltipElement.style.left = rect.left - _tooltipElement.clientWidth + "px"; }
+        removeElementChildren(_tooltipElement);
+        let p = win.document.createElement("p");
+        p.textContent = getValueDescription(variableDesc, objName, varSteStr, value);
+        _tooltipElement.appendChild(p);
+        _tooltipElement.style.top = Math.max(_tooltipY - _tooltipElement.clientHeight / 2, win.scrollY) + "px";
+      }, 350);
+    }
+    function removeTooltip(event, win) {
+      _tooltipElement = win.document.querySelector(".tool-tip"); clearTimeout(_tooltipTimeoutVar);
+      if (event.relatedTarget && event.relatedTarget.className == "tool-tip") { return; }
+      _tooltipElement.style.visibility = "hidden"; _tooltipElement.style.opacity = 0;
+    }
+    function applyTooltipPlot(variableDesc, objName, varName, win) {
+      const VALUE_RE = /^[\[{(]*([A-Z _\d]+)[\]})]*$/; const VAR_RE = /^[\[{(]*([A-Z _\d]+)/;
+      let match, text; let plotDetail = win.document.getElementById("plotDivDetail");
+      let allRectTexts = Array.from(plotDetail.querySelectorAll("text"));
+      for (let rectText of allRectTexts) {
+        text = rectText.textContent; let box = rectText;
+        match = VALUE_RE.exec(text);
+        if (match) {
+          let [_, value] = match;
+          box.addEventListener("mouseover", (event) => updateTooltipCoords(event));
+          box.addEventListener("mouseenter", (event) => startTooltipTimerValue(variableDesc, objName, varName, value, win));
+          box.addEventListener("mouseleave", (event) => removeTooltip(event, win));
+          box.addEventListener("click", (event) => removeTooltip(event, win));
+          continue;
+        }
+        match = VAR_RE.exec(text);
+        if (match) {
+          let [_, variable] = match;
+          box.addEventListener("mouseover", (event) => updateTooltipCoords(event));
+          box.addEventListener("mouseenter", (event) => startTooltipTimer(variableDesc, objName, variable, win));
+          box.addEventListener("mouseleave", (event) => removeTooltip(event, win));
+          box.addEventListener("click", (event) => removeTooltip(event, win));
+          continue;
+        }
+      }
+    }
+
+    // From: eqsim.js
+    const _ilsObjectVars = {}; const _coverageStatusMap = new Map();
+    function coverageStatusGet(ilsName, objName, varName) { return _coverageStatusMap.get(`${ilsName} ${objName} ${varName}`); }
+    function coverageStatusSet(ilsName, objName, varName, value) { _coverageStatusMap.set(`${ilsName} ${objName} ${varName}`, value); }
+    function coverageStatusSetDefault(ilsName, objName, varName) { _coverageStatusMap.delete(`${ilsName} ${objName} ${varName}`); }
+    const _modesMap = new Map();
+    function modesGet(ilsName) { return _modesMap.get(ilsName) || []; }
+    function modesSet(ilsName, modeList) { _modesMap.set(ilsName, modeList); }
+    const _varWindowMap = new Map();
+    function varWindowGetWindow(ilsName, objName, varName) { return _varWindowMap.get(`${ilsName} ${objName} ${varName}`); }
+    function varWindowGetWindowAll() { return _varWindowMap.values(); }
+    function varWindowGetVar(window) { for (const [k, v] of _varWindowMap.entries()) { if (v === window) { return k.split(" "); } } return undefined; }
+    function varWindowSet(ilsName, objName, varName, window) { _varWindowMap.set(`${ilsName} ${objName} ${varName}`, window); }
+    function varWindowRemove(ilsName, objName, varName) { _varWindowMap.delete(`${ilsName} ${objName} ${varName}`); }
+    function varWindowClear() { _varWindowMap.clear(); }
+    let _objTypeMap = {};
+    function objTypeGet(ils, obj) { typeMap = _objTypeMap[ils]; if (typeMap === undefined) { return undefined; } return typeMap[obj]; }
+    function objTypeSet(ils, obj, objType) { if (_objTypeMap[ils] === undefined) { _objTypeMap[ils] = {}; } _objTypeMap[ils][obj] = objType; }
+    let _ilsVariableDesc = {};
+    function variableDescGet(ils) { return _ilsVariableDesc[ils]; }
+    function variableDescSet(ils, desc) { _ilsVariableDesc[ils] = desc; }
+    let socket;
+    function getIls() { socket.send("list-ilss"); }
+    function getObjects(ilsName) { if (socket) { socket.send(`list-objects ${ilsName}`); } }
+    function getObjectVariables(ilsName, objName) { if (socket) { socket.send(`list-variables ${ilsName}/${objName}`); } }
+    function sendCoverageStatus(ilsName, objName, varName, value) { if (socket) { socket.send(`subscribe-mode ${ilsName}/${objName}/${varName}: ${value}`); } }
+    function sendVariableSubscription(ilsName, objName, varName) { if (socket) { socket.send(`subscribe ${ilsName}/${objName}/${varName}`); } }
+    function sendVariableUnsubscribe(ilsName, objName, varName) { if (socket) { socket.send(`unsubscribe ${ilsName}/${objName}/${varName}`); } }
+    function sendGetVariableDescriptions(ilsName) { if (socket) { socket.send(`get-variable-description ${ilsName}`); } }
+    function eqsimDisconnect() { if (socket) { socket.close(); } }
+    function eqsimConnect() {
+        const eqsimBtn = document.getElementById("eqsimBtn"); const eqsimVarsDetails = document.querySelector("#eqsimVars details");
+        const eqsimHost = document.getElementById("eqsimHost"); const eqsimPort = document.getElementById("eqsimPort");
+        const connectedCircle = document.querySelector("#connectedCircle"); const spinner = document.querySelector("#spinner");
+        const descButton = (ils) => document.querySelector(`#desc-btn-${ils}`);
+        let host = eqsimHost.value; let port = eqsimPort.value; addHost(host, port);
+        try { socket = new WebSocket(`ws://${host}:${port}`); } catch (e) { alert(e); return; }
+        spinner.style.visibility = "visible";
+        socket.addEventListener("error", e => { spinner.style.visibility = "hidden"; alert(`Cannot connect to ${e.target.url}`); });
+        socket.addEventListener("open", function (event) {
+            spinner.style.visibility = "hidden"; eqsimBtn.textContent = "Disconnect"; eqsimBtn.onclick = eqsimDisconnect; getIls();
+            eqsimVarsDetails.open = true; connectedCircle.setAttribute("fill", "#0e2");
+        });
+        socket.addEventListener("close", () => {
+            eqsimBtn.textContent = "Connect"; eqsimBtn.onclick = eqsimConnect; socket = null; closeLivePlot();
+            for (const window of varWindowGetWindowAll()) { window.close(); } varWindowClear();
+            connectedCircle.setAttribute("fill", "red"); spinner.style.visibility = "hidden";
+        });
+        const MODES_RE = /^available-modes ([^:]+): (.*)/; const modesHandler = (ils, modes) => { modesSet(ils, modes.split("|").map(x => x.split("^"))); };
+        const ILS_RE = /^ilss: (.+)/; const ilssHandler = (ilss) => { ilss = ilss.split(" "); for (const ils of ilss) { _ilsObjectVars[ils] = {}; getObjects(ils); } displayEqSimIls(ilss); };
+        const OBJECTS_RE = /^objects ([^:]+): (.*)/; const objectsHandler = (ils, objs) => {
+            objs = objs.split(" ");
+            for (const [obj, type] of objs.map((o) => o.split(":"))) { _ilsObjectVars[ils][obj] = []; objTypeSet(ils, obj, type); getObjectVariables(ils, obj); }
+            displayEqSimObj(ils, objs.map((o) => o.split(":")[0]));
+        };
+        const VARIABLES_RE = /^variables ([^\/]+)\/([^:]+): (.*)/; const variablesHandler = (ils, obj, variables) => { variables = variables.split(" "); _ilsObjectVars[ils][obj] = variables; displayEqSimVar(ils, obj, variables); };
+        let variableUnderUpdate = null; let updateData = null;
+        const UPDATE_START_RE = /^update-start ([^\/]+)\/([^\/]+)\/(.+)/; const updateStartHandler = (ils, obj, variable) => { updateData = []; variableUnderUpdate = [ils, obj, variable]; };
+        const UPDATE_DATA_RE = /^update-add (.*)/s; const updateDataHandler = (data) => { updateData.push(data); };
+        const UPDATE_END_RE = /^update-end ([^\/]+)\/([^\/]+)\/(.+)/; const updateEndHandler = (_ils, obj, variable) => { data = parseCovFile(updateData.join(""), obj, variable); eqsimeWindowUpdate(...variableUnderUpdate, data); };
+        let variableDescUnderUpdate = null; let variableDescData = null;
+        const VARIABLE_DESC_START_RE = /^variable-description-start (.+)/; const variableDescStartHandler = (ils) => { spinner.style.visibility = "visible"; variableDescData = []; variableDescUnderUpdate = ils; };
+        const VARIABLE_DESC_ADD_RE = /^variable-description-add (.*)/s; const variableDescDataHandler = (data) => { variableDescData.push(data); };
+        const VARIABLE_DESC_END_RE = /^variable-description-end (.+)/; const variableDescEndHandler = (ils) => {
+            spinner.style.visibility = "hidden"; if (ils === variableDescUnderUpdate) { variableDescSet(ils, parseDescFile(variableDescData.join(""))); descButton(ils).disabled = true; }
+        };
+        socket.addEventListener("message", function (event) {
+            const msgRegexpAndHandler = [ [MODES_RE, modesHandler], [ILS_RE, ilssHandler], [OBJECTS_RE, objectsHandler], [VARIABLES_RE, variablesHandler], [UPDATE_START_RE, updateStartHandler], [UPDATE_DATA_RE, updateDataHandler], [UPDATE_END_RE, updateEndHandler], [VARIABLE_DESC_START_RE, variableDescStartHandler], [VARIABLE_DESC_ADD_RE, variableDescDataHandler], [VARIABLE_DESC_END_RE, variableDescEndHandler], ];
+            for (let [re, msgHandler] of msgRegexpAndHandler) { let match = re.exec(event.data); if (match) { msgHandler(...match.slice(1)); return; } }
+        });
+    }
+    function eqsimeWindowUnsubscribe(win) { const variable = varWindowGetVar(win); if (variable) { varWindowRemove(...variable); sendVariableUnsubscribe(...variable); coverageStatusSetDefault(...variable); } }
+    function eqsimeWindowSubscribe(win, ilsName, objName, varName) { const subscribedWindowForVar = varWindowGetWindow(ilsName, objName, varName); if (!subscribedWindowForVar) { varWindowSet(ilsName, objName, varName, win); sendVariableSubscription(ilsName, objName, varName); } }
+    function eqsimeWindowUpdate(ilsName, objName, varName, sternolData) { const window = varWindowGetWindow(ilsName, objName, varName); if (window) { plotViz(sternolData, ilsName, objName, varName, window); } }
+    function displayEqSimIls(ilss) {
+        let eqsimVars = document.getElementById("eqsim_vars"); removeElementChildren(eqsimVars); let ilsList = document.createElement("ul"); eqsimVars.appendChild(ilsList);
+        for (let ils of ilss) {
+            let ilsli = document.createElement("li"); ilsList.appendChild(ilsli);
+            let details = document.createElement("details"); ilsli.appendChild(details);
+            let summary = document.createElement("summary"); summary.textContent = ils;
+            let getDescBtn = document.createElement("button"); getDescBtn.disabled = variableDescGet(ils) !== undefined;
+            getDescBtn.id = `desc-btn-${ils}`; getDescBtn.style.marginLeft = "1em"; getDescBtn.textContent = "Load descriptions";
+            getDescBtn.onclick = () => sendGetVariableDescriptions(ils);
+            summary.appendChild(getDescBtn); details.appendChild(summary);
+            let objList = document.createElement("ul"); objList.id = ils; details.appendChild(objList);
+        }
+    }
+    function displayEqSimObj(ils, eqsimObjects) {
+        let objList = document.getElementById(ils); removeElementChildren(objList);
+        for (let eqsimObject of eqsimObjects) {
+            let objli = document.createElement("li"); objList.appendChild(objli); let details = document.createElement("details"); objli.appendChild(details);
+            let summary = document.createElement("summary"); summary.className = "objName"; summary.textContent = eqsimObject;
+            let objType = objTypeGet(ils, eqsimObject); if (objType !== eqsimObject) { summary.textContent += " - " + objType; }
+            details.appendChild(summary); let varList = document.createElement("ul"); varList.id = eqsimObject; details.appendChild(varList);
+        }
+    }
+    function filterEqsimeVar() {
+        const ul = document.querySelector("#eqsim_vars > ul"); for (const details of ul.querySelectorAll(":scope > li > details")) { details.open = true; }
+        filterTree(ul, document.getElementById("eqsime-obj-var-filter").value, document.getElementById("eqsime-obj-var-filter2").value);
+    }
+    function eqsimeOpenInSameWindow(ilsName, objName, varName, currentWindow=this) {
+        const subscribedWindowForVar = varWindowGetWindow(ilsName, objName, varName); if (subscribedWindowForVar) { subscribedWindowForVar.focus(); return; }
+        document.querySelector(".newTabBtn").onclick = () => { popOutEqsimVar(ilsName, objName, varName); }
+        eqsimeWindowSubscribe(currentWindow, ilsName, objName, varName);
+    }
+    function eqsimeOpenInNewWindow(ilsName, objName, varName) {
+        const subscribedWindowForVar = varWindowGetWindow(ilsName, objName, varName); if (subscribedWindowForVar) { subscribedWindowForVar.focus(); return; }
+        const newWin = openInNewTab(objName, varName); newWin.onbeforeunload = function () { eqsimeWindowUnsubscribe(newWin); };
+        eqsimeWindowSubscribe(newWin, ilsName, objName, varName);
+    }
+    function displayEqSimVar(ilsName, objName, eqsimVars) {
+        let varList = document.getElementById(objName); removeElementChildren(varList);
+        for (let varName of eqsimVars) {
+            let varNodeLi = document.createElement("li"); let varNode = document.createElement("span");
+            varNode.className = "varName"; varNode.textContent = varName;
+            varNode.addEventListener("click", (event) => { removeTooltip(event, this); if (newTabModeInput.checked) { eqsimeOpenInNewWindow(ilsName, objName, varName); } else { eqsimeOpenInSameWindow(ilsName, objName, varName); } });
+            varNode.addEventListener("contextmenu", (event) => {
+                event.preventDefault(); removeTooltip(event, this);
+                if (newTabModeInput.checked) { showContextMenu(event, objName, varName, "open in same tab", () => eqsimeOpenInSameWindow(ilsName, objName, varName)); }
+                else { showContextMenu(event, objName, varName, "open in new tab", () => eqsimeOpenInNewWindow(ilsName, objName, varName)); }
+            });
+            varNode.addEventListener("mouseover", (event) => updateTooltipCoords(event));
+            varNode.addEventListener("mouseenter", (event) => startTooltipTimer(variableDescGet(ilsName), objTypeGet(ilsName, objName), varName, this));
+            varNode.addEventListener("mouseleave", (event) => removeTooltip(event, this));
+            varNodeLi.appendChild(varNode); varList.appendChild(varNodeLi);
+        }
+    }
+
+    // From: plotHandler.js
+    function popOut(data) { let btn = document.querySelector(".newTabBtn"); openInNewTab(btn.objSteStr, btn.varSteStr, data); closePlot(); }
+    function popOutEqsimVar(ilsName, objName, varName) {
+      closeLivePlot(ilsName, objName, varName);
+      const newWin = openInNewTab(objName, varName);
+      newWin.onbeforeunload = () => { eqsimeWindowUnsubscribe(newWin); };
+      eqsimeWindowSubscribe(newWin, ilsName, objName, varName);
+    }
+    function openPlot(currentWindow) { const plotDiv = currentWindow.document.getElementById("plotDiv"); if (plotDiv) { plotDiv.style.width = "100%"; } }
+    function closeLivePlot(ilsName, objName, varName) { closePlot(); }
+    function closePlot() { eqsimeWindowUnsubscribe(this); document.getElementById("plotDiv").style.width = "0"; }
+    function createGraph(sternolData, objName, varName) {
+        const varObj = sternolData.objectList[objName].variableList[varName]; const container = document.createElement("div"); container.classList.add("eqGraph");
+        for (const [sub, subObj] of varObj.subs) { var aplotDiv = document.createElement("div"); container.appendChild(aplotDiv); railroadSvgDiagramCreate(aplotDiv, sub, subObj.equation); }
+        for (const [equ, equObj] of varObj.equations) { var aplotDiv = document.createElement("div"); container.appendChild(aplotDiv); railroadSvgDiagramCreate(aplotDiv, equ, equObj.equation); }
+        return container;
+    }
+    function plot(sternolData, objName, varName, currentWindow) {
+        const varObj = sternolData.objectList[objName].variableList[varName]; var paddingTagName = 20; var maxSlot = 10;
+        currentWindow.document.getElementById("momentaryOrCoverage").style.display = "none";
+        var plotDivDetail = currentWindow.document.getElementById("plotDivDetail"); plotDivDetail.innerHTML = "";
+        var varTitle = currentWindow.document.createElement("h3"); plotDivDetail.appendChild(varTitle);
+        var varCondPercent = ((100 * varObj.testedCondCount) / varObj.condCount).toFixed(2);
+        var varDomPercent = ((100 * varObj.testedDomCount) / varObj.domCount).toFixed(2);
+        var displayVar = ""; displayVar += " Variable Name:".padEnd(paddingTagName - 1, " ") + varName;
+        if (variableDesc && variableDesc[objName] && variableDesc[objName][varName]) { displayVar += " -- " + variableDesc[objName][varName].ShortDescription; }
+        displayVar += "\n Object Name:".padEnd(paddingTagName, " ") + objName;
+        if (sternolData.coverageFile) {
+            displayVar += "\n Condition:".padEnd(paddingTagName, " ") + getStarBar(varCondPercent, maxSlot) + " [" + varObj.testedCondCount + "/" + varObj.condCount + " = " + varCondPercent + "%]";
+            displayVar += "\n Domain:".padEnd(paddingTagName, " ") + getStarBar(varDomPercent, maxSlot) + " [" + varObj.testedDomCount + "/" + varObj.domCount + " = " + varDomPercent + "%]";
+        }
+        plotDivDetail.appendChild(createGraph(sternolData, objName, varName));
+        if (variableDesc) { populateParent(plotDivDetail, variableDesc, objName, varName, currentWindow); }
+        varTitle.innerHTML = "<pre>" + displayVar.fontcolor("black") + "</pre>";
+        let btn = currentWindow.document.querySelector(".newTabBtn"); btn.objSteStr = objName; btn.varSteStr = varName;
+        applyTooltipPlot(variableDesc, objName, varName, currentWindow);
+        const varNamesRe = /\w+/g; currentWindow.history.pushState([objName, varName], "");
+        for (const text of plotDivDetail.querySelectorAll("text")) {
+            for (const [variable] of text.textContent.matchAll(varNamesRe)) {
+                if (variable in sternolData.objectList[objName].variableList) {
+                    if (variable === varName) { continue; }
+                    text.style.textDecoration = "dashed underline"; text.style.cursor = "pointer";
+                    text.addEventListener("click", () => { if (newTabModeInput.checked) { openInNewTab(objName, variable, sternolData); } else { plot(sternolData, objName, variable, currentWindow); } });
+                    text.addEventListener("contextmenu", (event) => {
+                        event.preventDefault();
+                        if (newTabModeInput.checked) { showContextMenu(event, objName, variable, "open in same window", () => { plot(sternolData, objName, variable, currentWindow); }, currentWindow); }
+                        else { showContextMenu(event, objName, variable, "open in new tab", () => { openInNewTab(objName, variable, sternolData); }, currentWindow); }
+                    });
+                    break;
+                }
+            }
+        }
+        openPlot(currentWindow);
+    }
+    function plotViz(sternolData, ilsName, objName, varName, currentWindow) {
+        const varObj = sternolData.objectList[objName].variableList[varName]; var paddingTagName = 20; var maxSlot = 10;
+        var varCondPercent = ((100 * varObj.testedCondCount) / varObj.condCount).toFixed(2);
+        var varDomPercent = ((100 * varObj.testedDomCount) / varObj.domCount).toFixed(2);
+        const momCovDiv = currentWindow.document.getElementById("momentaryOrCoverage"); momCovDiv.replaceChildren();
+        for (const [value, description] of modesGet(ilsName)) {
+            let label = currentWindow.document.createElement("label"); label.textContent = description;
+            let input = currentWindow.document.createElement("input"); input.setAttribute("type", "radio");
+            input.setAttribute("name", "coverage"); input.setAttribute("value", value);
+            label.appendChild(input); momCovDiv.appendChild(label);
+        }
+        const coverage = coverageStatusGet(ilsName, objName, varName) || (momCovDiv.firstElementChild ? momCovDiv.firstElementChild.firstElementChild.value : null);
+        if (coverage) {
+            momCovDiv.style.display = "flex";
+            momCovDiv.querySelectorAll("input").forEach((e) => {
+                if (e.value === coverage) { e.checked = true; } else { e.checked = false; }
+                e.onchange = () => { coverageStatusSet(ilsName, objName, varName, e.value); sendCoverageStatus(ilsName, objName, varName, e.value); };
+            });
+        }
+        var varTitle = currentWindow.document.createElement("h3"); const varTitlePre = document.createElement("pre");
+        varTitlePre.textContent = `${ilsName} - ${objName} - ${varName}`; varTitle.appendChild(varTitlePre);
+        const varTitleCoverageInfo = document.createElement("pre");
+        varTitleCoverageInfo.style.display = (coverage && coverage.search("overage") >= 0) ? "block" : "none";
+        varTitleCoverageInfo.innerHTML = " Condition:".padEnd(paddingTagName - 1, " ") + getStarBar(varCondPercent, maxSlot) + " [" + varObj.testedCondCount + "/" + varObj.condCount + " = " + varCondPercent + "%]";
+        varTitleCoverageInfo.innerHTML += "\n Domain:".padEnd(paddingTagName, " ") + getStarBar(varDomPercent, maxSlot) + " [" + varObj.testedDomCount + "/" + varObj.domCount + " = " + varDomPercent + "%]";
+        varTitle.appendChild(varTitleCoverageInfo);
+        varTitle.addEventListener("mouseover", (event) => updateTooltipCoords(event));
+        varTitle.addEventListener("mouseenter", (event) => startTooltipTimer(variableDescGet(ilsName), objTypeGet(ilsName, objName), varName, currentWindow));
+        varTitle.addEventListener("mouseleave", (event) => removeTooltip(event, currentWindow));
+        var plotDivDetail = currentWindow.document.getElementById("plotDivDetail"); plotDivDetail.innerHTML = ""; plotDivDetail.appendChild(varTitle);
+        plotDivDetail.appendChild(createGraph(sternolData, objName, varName));
+        const varDesc = variableDescGet(ilsName);
+        if (varDesc) { populateParent(plotDivDetail, varDesc, objTypeGet(ilsName, objName), varName, currentWindow); }
+        let btn = currentWindow.document.querySelector(".newTabBtn"); btn.objName = objName; btn.varSteStr = varName;
+        applyTooltipPlot(variableDescGet(ilsName), objTypeGet(ilsName, objName), varName, currentWindow);
+        const varNamesRe = /\w+/g; currentWindow.history.pushState([ilsName, objName, varName], "");
+        for (const text of plotDivDetail.querySelectorAll("text")) {
+            for (const [variable] of text.textContent.matchAll(varNamesRe)) {
+                if (_ilsObjectVars[ilsName][objName].includes(variable)) {
+                    if (variable === varName) { continue; }
+                    text.style.textDecoration = "dashed underline"; text.style.cursor = "pointer";
+                    text.addEventListener("click", () => { if (newTabModeInput.checked) { eqsimeOpenInNewWindow(ilsName, objName, variable); } else { eqsimeWindowUnsubscribe(currentWindow); eqsimeOpenInSameWindow(ilsName, objName, variable, currentWindow); } });
+                    text.addEventListener("contextmenu", (event) => {
+                        event.preventDefault();
+                        if (newTabModeInput.checked) { showContextMenu(event, objName, variable, "open in same tab", () => { eqsimeWindowUnsubscribe(currentWindow); eqsimeOpenInSameWindow(ilsName, objName, variable, currentWindow) }, currentWindow); }
+                        else { showContextMenu(event, objName, variable, "open in new tab", () => { eqsimeOpenInNewWindow(ilsName, objName, variable); }, currentWindow); }
+                    });
+                    break;
+                }
+            }
+        }
+        openPlot(currentWindow);
+    }
+
+    // From: utility.js
+    function removeElementChildren(elem) { while (elem.firstChild) { elem.removeChild(elem.firstChild); } }
+    function genCSVRow(isQuote, delimiter, strArray) {
+        var ret = "";
+        for (var i = 0; i < strArray.length; i++) {
+            var str = strArray[i];
+            if (isQuote) { str = '"' + str + '"'; }
+            if (ret.length == 0) { ret += str; } else { ret += delimiter + str; }
+        }
+        return ret;
+    }
+    function toggleElem(elemName) { var elem = document.getElementById(elemName); elem.style.display = elem.style.display == "none" ? "" : "none"; }
+    function downloadCSVFile(data, fileName) {
+        var blob = new Blob([data], { type: "text/csv" });
+        if (window.navigator.msSaveOrOpenBlob) { window.navigator.msSaveBlob(blob, fileName); }
+        else {
+            var elem = window.document.createElement("a"); elem.href = window.URL.createObjectURL(blob); elem.download = fileName;
+            document.body.appendChild(elem); elem.click(); document.body.removeChild(elem);
+        }
+    }
+    function addUniqueToArray(array, item) { if (array.indexOf(item) < 0) { array.push(item); } }
+    var sternolGlobal; let descInput, sternolInput, CovCriteriaNum, statOut, statDetail, coverageReportDetails, coverageFilter, newTabModeInput, tooltip;
+    var localeOption = { maximumFractionDigits: 2, minimumFractionDigits: 2 };
+    function generateCovList() {
+        var csv = [];
+        csv.push(genCSVRow(true, ",", ["Object Name", "Variable Name", "Condition coverage", "Tested conditions", "Total conditions", "Domain coverage", "Tested domains", "Total domains", ]));
+        for (var objSteStr in sternolGlobal.objectList) {
+            var obj = sternolGlobal.objectList[objSteStr];
+            for (var varSteStr in obj.variableList) {
+                var varObj = sternolGlobal.objectList[objSteStr].variableList[varSteStr];
+                var percentage1 = varObj.condCount == 0 ? 100 : (100 * varObj.testedCondCount) / varObj.condCount;
+                percentage1 = percentage1.toLocaleString(navigator.language, localeOption) + "%";
+                var percentage2 = varObj.domCount == 0 ? 100 : (100 * varObj.testedDomCount) / varObj.domCount;
+                percentage2 = percentage2.toLocaleString(navigator.language, localeOption) + "%";
+                csv.push(genCSVRow(true, ",", [objSteStr, varSteStr, percentage1, varObj.testedCondCount, varObj.condCount, percentage2, varObj.testedDomCount, varObj.domCount, ]));
+            }
+        }
+        var csvContent = csv.join("\n"); downloadCSVFile(csvContent, "coverageList.csv");
+    }
+    function testCoverageColorGradient(covered, total) {
+        const gradient = ['#cc2222', '#cc3022', '#cc3e22', '#cc4c22', '#cc5a22', '#cc6822', '#cc7622', '#cc8422', '#cc9222', '#cca022', '#ccae22', '#ccbc22', '#cccb22', '#cccc22', '#cccc22', '#cccc22', '#cccc22', '#cccc22', '#bdcc22', '#afcc22', '#a1cc22', '#93cc22', '#85cc22', '#77cc22', '#68cc22', '#5bcc22', '#4ccc22', '#3fcc22', '#30cc22', '#22cc22'];
+        return gradient[Math.round((covered * (gradient.length - 1)) / total)];
+    }
+    function createReportAndDownload() { const report = generateReport(document.getElementById("reportIncludePlots").checked); if (report !== null) { download("codeCoverageReport.html", report); } }
+    function get_current_time() { const today = new Date(); const date = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate(); const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds(); return date + " " + time; }
+    function generateReport(includePlots) {
+        const sternolFilename = sternolInput.files[0].name; const newStatDetail = document.getElementById("statDetail").cloneNode(true); let script = "";
+        if (includePlots) {
+            for (const e of newStatDetail.querySelectorAll(".variable")) {
+                const varName = e.querySelector("span").textContent;
+                const objName = e.parentElement.parentElement.firstElementChild.firstElementChild.firstElementChild.textContent;
+                const details = document.createElement("details"); details.setAttribute("data-obj", objName); details.setAttribute("data-var", varName);
+                const summary = document.createElement("summary"); while (e.firstChild) { summary.appendChild(e.removeChild(e.firstChild)); }
+                details.appendChild(summary); details.appendChild(document.createElement("div")); e.appendChild(details);
+            }
+            const sternolData = JSON.stringify(sternolGlobal); const rrdScript = document.querySelector('script').textContent.split('// --- END OF RAILROAD DIAGRAM SCRIPT ---')[0].split('// --- RAILROAD DIAGRAM SCRIPT ---')[1];
+            script = `const sternolGlobal = ${sternolData}; \n ${rrdScript} \n for (const e of document.querySelectorAll("[data-var]")) { const objName = e.getAttribute("data-obj"); const varName = e.getAttribute("data-var"); const varObj = sternolGlobal.objectList[objName].variableList[varName]; const container = e.lastChild; e.addEventListener("toggle", () => { if (e.open) { for (const [domain, sub] of varObj.subs) { railroadSvgDiagramCreate(container, domain, sub.equation); } for (const [domain, eq] of varObj.equations) { railroadSvgDiagramCreate(container, domain, eq.equation); } } else { container.replaceChildren(); } }); }`;
+        }
+        const content = newStatDetail.outerHTML; const title = document.getElementById("reportTitle").value;
+        const docNumber = document.getElementById("reportDocNumber").value; const docVersion = document.getElementById("reportDocVersion").value;
+        const dateTime = get_current_time(); const styleSheet = ` ul, #myUL { list-style-type: none; } input { display: none; } header h1 { font-size: 14pt; color: #fff; background-color: #1e3246; padding: 5px; margin: 0px; } #myUL { margin: 0; padding: 0; } .overview > span { display: inline-block; width: 19em; } .overview > span:first-child { width: 14em; } .variable summary { display: flex; justify-content: space-between; width: 55em; } .active { display: block; } .objectRow { display: inline-flex; justify-content: space-between; width: 54em; } .badgeName { background: #555; color: white; padding: 2px 8px 2px 4px; border: 1px solid black; border-right: 0; border-radius: 5px 0 0 5px; } .badgeValue { color: black; padding: 2px 4px 2px 8px; border: 1px solid black; border-left: 0; border-radius: 0 5px 5px 0; display: inline-block; width: 11em; margin-right: 2em; } .badgeValue--small { width: 4em; } .sternolfile_info > li > span:first-child { width: 15rem; color: black; font-weight: bold; } .variable details div { background-color: lightgray; min-width: 100%; } .variable details div svg { display: block; }`;
+        const report = `<!DOCTYPE html><html><head><style>${styleSheet}</style></head><body><header><h1 style="display: flex; justify-content:space-between; align-items: center;"><span>Sternol Code Coverage Report</span></h1></header><h3>${title}</h3><div style="display:flex; gap:1rem;"><ul class="sternolfile_info"><li><span>Date:</span> <span>${dateTime}</span></li><li><span>Document number:</span> <span>${docNumber}</span></li><li><span>Document version:</span> <span>${docVersion}</span></li></ul><ul class="sternolfile_info"><li><span>STERNOL file:</span> <span>${sternolFilename}</span></li><li><span>Coverage report generator used:</span> <span>${sternolGlobal.docGenerator}</span></li><li><span>Document number STERNOL file:</span> <span>${sternolGlobal.docNumber}<span></li><li><span>Revision STERNOL file:</span> <span>${sternolGlobal.docRevision}</span></li></ul></div>${content}<script type="text/javascript">${script}<\/script></body></html>`;
+        return report;
+    }
+    function download(filename, content) {
+        var element = document.createElement("a");
+        element.setAttribute("href", "data:text/html;charset=utf-8," + encodeURIComponent(content));
+        element.setAttribute("download", filename); element.style.display = "none"; document.body.appendChild(element);
+        element.click(); document.body.removeChild(element);
+    }
+    function displayOverview(lowCriteria) {
+        if (sternolGlobal.coverageFile) {
+            document.getElementById("diagrams-title").textContent = "Variable Diagrams with Code Coverage";
+            coverageReportDetails.style.display = "block"; coverageFilter.style.display = "grid";
+        } else {
+            document.getElementById("diagrams-title").textContent = "Variable Diagrams";
+            coverageReportDetails.style.display = "none"; coverageFilter.style.display = "none";
+        }
+        statOut.style.display = "block"; statDetail.innerHTML = ""; let overview = document.createElement("p");
+        statDetail.appendChild(overview); const nameSpan = document.createElement("span"); nameSpan.textContent = "Overall";
+        const condSpan = createBadge("Cond", { covered: sternolGlobal.testedCondCount, total: sternolGlobal.condCount, });
+        const domSpan = createBadge("Domain", { covered: sternolGlobal.testedDomCount, total: sternolGlobal.domCount, });
+        overview.appendChild(nameSpan); overview.appendChild(condSpan); overview.appendChild(domSpan); overview.className = "overview";
+        let myList = document.createElement("ul"); myList.id = "objList";
+        for (let objSteStr in sternolGlobal.objectList) {
+            let obj = sternolGlobal.objectList[objSteStr]; let objList = document.createElement("li");
+            myList.appendChild(objList); let details = document.createElement("details"); let summary = document.createElement("summary");
+            details.appendChild(summary); let objName = document.createElement("span"); objName.className = "objectRow";
+            const nameSpan = document.createElement("span"); nameSpan.className = "objName"; nameSpan.textContent = objSteStr;
+            objName.appendChild(nameSpan); const statSpan = document.createElement("span");
+            const condSpan = createBadge("Cond", { covered: obj.testedCondCount, total: obj.condCount, });
+            statSpan.appendChild(condSpan); const domSpan = createBadge("Domain", { covered: obj.testedDomCount, total: obj.domCount, });
+            statSpan.appendChild(domSpan); objName.appendChild(statSpan); summary.appendChild(objName); objList.appendChild(details);
+            let varList = document.createElement("ul"); details.appendChild(varList);
+            for (let varSteStr in obj.variableList) {
+                let varObj = sternolGlobal.objectList[objSteStr].variableList[varSteStr];
+                let percentage = (100 * varObj.testedCondCount) / varObj.condCount; percentage = isNaN(percentage) ? -1 : percentage;
+                if (percentage <= lowCriteria) {
+                    let varNode = document.createElement("li"); const nameSpan = document.createElement("span");
+                    nameSpan.className = "varName"; nameSpan.textContent = varSteStr; varNode.appendChild(nameSpan);
+                    const statSpan = document.createElement("span"); const condSpan = createBadge("Cond", { covered: varObj.testedCondCount, total: varObj.condCount, });
+                    statSpan.appendChild(condSpan); const domSpan = createBadge("Domain", { covered: varObj.testedDomCount, total: varObj.domCount, });
+                    statSpan.appendChild(domSpan); varNode.appendChild(statSpan); varNode.className = "variable";
+                    varNode.addEventListener("click", () => {
+                        document.querySelector(".newTabBtn").onclick = () => { popOut(sternolGlobal); };
+                        if (newTabModeInput.checked) { openInNewTab(objSteStr, varSteStr, sternolGlobal); }
+                        else { plot(sternolGlobal, objSteStr, varSteStr, this); }
+                    });
+                    nameSpan.addEventListener("mouseover", (event) => updateTooltipCoords(event));
+                    nameSpan.addEventListener("mouseenter", (event) => startTooltipTimer(variableDesc, objSteStr, varSteStr, this));
+                    nameSpan.addEventListener("mouseleave", (event) => removeTooltip(event, this));
+                    varNode.addEventListener("contextmenu", (event) => {
+                        event.preventDefault();
+                        if (newTabModeInput.checked) { showContextMenu(event, objSteStr, varSteStr, "open in same window", () => { plot(sternolGlobal, objSteStr, varSteStr, this); }); }
+                        else { showContextMenu(event, objSteStr, varSteStr, "open in new tab", () => { openInNewTab(objSteStr, varSteStr, sternolGlobal); }); }
+                    });
+                    varList.appendChild(varNode);
+                }
+            }
+        }
+        statDetail.appendChild(myList); statOut.firstElementChild.open = true;
+    }
+    function createBadgePercentage(valueSpan, covered, total) {
+        if (total) {
+            valueSpan.textContent = `${covered}/${total} [${((100 * covered) / total).toFixed(2)}%]`;
+            valueSpan.style["background-color"] = testCoverageColorGradient(covered, total);
+        } else {
+            valueSpan.textContent = "0/0 [100%]";
+            valueSpan.style["background-color"] = testCoverageColorGradient(1, 1);
+        }
+    }
+    function createBadge(name, data) {
+        const badgeSpan = document.createElement("span"); const nameSpan = document.createElement("span");
+        const valueSpan = document.createElement("span"); nameSpan.textContent = name;
+        badgeSpan.className = "badge"; nameSpan.className = "badgeName"; valueSpan.className = "badgeValue";
+        if (sternolGlobal.coverageFile) { createBadgePercentage(valueSpan, data.covered, data.total); }
+        else { valueSpan.textContent = data.total; }
+        badgeSpan.appendChild(nameSpan); badgeSpan.appendChild(valueSpan); return badgeSpan;
+    }
+    function* sternolLex(input) {
+        const rest = [];
+        for (const line of input.split("\n")) {
+            if (line.startsWith("!") || line.startsWith("%")) { yield line; continue; }
+            const statements = line.split(";"); rest.push(statements[0]); if (statements.length === 1) { continue; }
+            for (let i = 1; i < statements.length; i++) { yield rest.join("").replace(/\s+/g, "") + ";"; rest.length = 0; rest.push(statements[i]); }
+        }
+    }
+    function parseCovFile(inputStr, objectName = null, variableName = null) {
+        const nonobj = { "PAR": true, "CONST": true, "OBJ": true, "GLOBVAR": true, "GVAR": true, "INOUT": true, "VAR": true, "OWN": true, "IN": true, "OUT": true, "EQU": true, "END": true };
+        const consts = []; const _t = (s) => { for (const [re, value] of consts) { s = s.replaceAll(re, value); } return s; };
+        var ret = { coverageFile: false, domCount: 0, testedDomCount: 0, condCount: 0, testedCondCount: 0, objectList: {}, docNumber: "", docRevision: "", docGenerator: "", };
+        var currentObj = ""; var currentVar = ""; if (objectName) { currentObj = objectName; ret.objectList[currentObj] = { domCount: 0, testedDomCount: 0, condCount: 0, testedCondCount: 0, variableList: {}, }; }
+        if (variableName) { currentVar = variableName; ret.objectList[currentObj].variableList[currentVar] = { subs: [], equations: [], domCount: 0, testedDomCount: 0, condCount: 0, testedCondCount: 0, }; }
+        for (const line of sternolLex(inputStr)) {
+            const constMatch = /^(\w+):(-?\d+);$/.exec(line); if (constMatch) { consts.push([new RegExp(`\\b${constMatch[1]}\\b`, "g"), `${constMatch[2]}:${constMatch[1]}`]); }
+            const matchObj = /^#(\w+);$/.exec(line); if (matchObj) { if (!nonobj[matchObj[1]]) { ret.objectList[matchObj[1]] = { domCount: 0, testedDomCount: 0, condCount: 0, testedCondCount: 0, variableList: {}, }; currentObj = matchObj[1]; } continue; }
+            const matchVar = /^\$(.+);$/i.exec(line); if (matchVar) { currentVar = matchVar[1]; if (ret.objectList[currentObj].variableList[currentVar] == undefined) { ret.objectList[currentObj].variableList[currentVar] = { subs: [], equations: [], domCount: 0, testedDomCount: 0, condCount: 0, testedCondCount: 0, }; } continue; }
+            const matchSub = /^([[{]?(SUBLOG|SUBARI)(.+?)[\]}]?):(.+?);$/i.exec(line); if (matchSub) {
+                var subName = matchSub[1]; var equation = _t(matchSub[4]); var rrd = railroadStats(equation);
+                ret.objectList[currentObj].variableList[currentVar].subs.push([subName, { equation: equation, condCount: rrd.condCount, testedCondCount: rrd.testedCondCount, }]);
+                if (subName.includes("SUBLOG")) {
+                    ret.objectList[currentObj].variableList[currentVar].condCount += rrd.condCount; ret.objectList[currentObj].condCount += rrd.condCount; ret.condCount += rrd.condCount;
+                    ret.objectList[currentObj].variableList[currentVar].testedCondCount += rrd.testedCondCount; ret.objectList[currentObj].testedCondCount += rrd.testedCondCount; ret.testedCondCount += rrd.testedCondCount;
+                }
+            }
+            const matchDocNumber = /%DOCNO=(.+)/.exec(line); if (matchDocNumber) { ret.docNumber = matchDocNumber[1]; continue; }
+            const matchDocRevision = /%REV=(.+)/.exec(line); if (matchDocRevision) { ret.docRevision = matchDocRevision[1]; continue; }
+            const matchDocGenerator = /!coverageReport generated from (.+) at .+/.exec(line); if (matchDocGenerator) { ret.docGenerator = matchDocGenerator[1]; ret.coverageFile = true; continue; }
+            const matchDocGenerator2 = /! *WRITTEN BY (mergeCoverage[^,]+).*/.exec(line); if (matchDocGenerator2) { ret.docGenerator = matchDocGenerator2[1]; ret.coverageFile = true; continue; }
+            const matchDefDomain = /^(.+?):=([^:]+);$/i.exec(line); if (matchDefDomain) {
+                var varName = matchDefDomain[1]; var domain = _t(matchDefDomain[2]);
+                if (varName == currentVar) {
+                    ret.objectList[currentObj].variableList[currentVar].equations.push([domain, { equation: "", condCount: 0, testedCondCount: 0, }]);
+                    ret.objectList[currentObj].variableList[currentVar].domCount++; ret.objectList[currentObj].domCount++; ret.domCount++;
+                    if (domain.startsWith("{")) { ret.objectList[currentObj].variableList[currentVar].testedDomCount++; ret.objectList[currentObj].testedDomCount++; ret.testedDomCount++; }
+                }
+            }
+            const matchDomain = /^(.+?):=(.+?):(.+?);$/i.exec(line); if (matchDomain) {
+                var varName = matchDomain[1]; var domain = _t(matchDomain[2]); var equation = _t(matchDomain[3]);
+                if (varName == currentVar) {
+                    var rrd = railroadStats(equation);
+                    ret.objectList[currentObj].variableList[currentVar].equations.push([domain, { equation: equation, condCount: rrd.condCount, testedCondCount: rrd.testedCondCount, }]);
+                    ret.objectList[currentObj].variableList[currentVar].condCount += rrd.condCount; ret.objectList[currentObj].condCount += rrd.condCount; ret.condCount += rrd.condCount;
+                    ret.objectList[currentObj].variableList[currentVar].testedCondCount += rrd.testedCondCount; ret.objectList[currentObj].testedCondCount += rrd.testedCondCount; ret.testedCondCount += rrd.testedCondCount;
+                    ret.objectList[currentObj].variableList[currentVar].domCount++; ret.objectList[currentObj].domCount++; ret.domCount++;
+                    if (domain.startsWith("{")) { ret.objectList[currentObj].variableList[currentVar].testedDomCount++; ret.objectList[currentObj].testedDomCount++; ret.testedDomCount++; }
+                }
+            }
+        }
+        return ret;
+    }
+    
+    // --- MAIN APP SCRIPT ---
     document.addEventListener('DOMContentLoaded', () => {
         // --- TAB NAVIGATION ---
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', () => {
                 const tabName = button.dataset.tab;
-                
-                // Update button states
                 document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                
-                // Update tab content
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                 document.getElementById(`${tabName}-tab`).classList.add('active');
             });
@@ -204,468 +1414,127 @@
         const layersList = document.getElementById('layers-list');
 
         let svgElement = null, viewBox = [0, 0, 1000, 1000];
-        let drawingGroup = null; // SVG group for drawings
-        let layers = [], activeLayerId = null;
-        let currentTool = 'pan';
-        let isDrawing = false, isPanning = false;
+        let drawingGroup = null; let layers = [], activeLayerId = null;
+        let currentTool = 'pan'; let isDrawing = false, isPanning = false;
         let startPoint = {}, panStartPoint = {};
-        let currentPath = null; // For pencil tool
-        let tempElement = null; // For preview during drawing
-        let contextTargetCell = null;
+        let currentPath = null; let tempElement = null; let contextTargetCell = null;
 
-        // --- COORDINATE TRANSFORMATION UTILITY ---
-        function screenToSvgCoords(clientX, clientY) {
-            const pt = svgElement.createSVGPoint();
-            pt.x = clientX;
-            pt.y = clientY;
-            return pt.matrixTransform(svgElement.getScreenCTM().inverse());
-        }
-
-        // --- DRAWING & LAYERS ---
-        function addLayer(name = `Layer ${layers.length + 1}`) {
-            const newLayer = { 
-                id: Date.now(), 
-                name, 
-                isVisible: true, 
-                group: null
-            };
-            layers.push(newLayer);
-            setActiveLayer(newLayer.id);
-            renderLayersUI();
-            createLayerGroup(newLayer);
-            reorderLayersInSVG(); // Ensure proper draw order
-            return newLayer;
-        }
-
-        function createLayerGroup(layer) {
-            if (!drawingGroup) return;
-            layer.group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-            layer.group.setAttribute('id', `layer-${layer.id}`);
-            layer.group.setAttribute('data-layer-name', layer.name);
-            drawingGroup.appendChild(layer.group);
-        }
-
-        function setActiveLayer(id) {
-            activeLayerId = id;
-            renderLayersUI();
-        }
-
+        function screenToSvgCoords(clientX, clientY) { const pt = svgElement.createSVGPoint(); pt.x = clientX; pt.y = clientY; return pt.matrixTransform(svgElement.getScreenCTM().inverse()); }
+        function addLayer(name = `Layer ${layers.length + 1}`) { const newLayer = { id: Date.now(), name, isVisible: true, group: null }; layers.push(newLayer); setActiveLayer(newLayer.id); renderLayersUI(); createLayerGroup(newLayer); reorderLayersInSVG(); return newLayer; }
+        function createLayerGroup(layer) { if (!drawingGroup) return; layer.group = document.createElementNS('http://www.w3.org/2000/svg', 'g'); layer.group.setAttribute('id', `layer-${layer.id}`); layer.group.setAttribute('data-layer-name', layer.name); drawingGroup.appendChild(layer.group); }
+        function setActiveLayer(id) { activeLayerId = id; renderLayersUI(); }
         function renderLayersUI() {
             layersList.innerHTML = '';
             layers.forEach((layer, index) => {
-                const li = document.createElement('li');
-                li.className = layer.id === activeLayerId ? 'active' : '';
-                li.dataset.id = layer.id;
-                li.innerHTML = `
-                    <span class="visibility">${layer.isVisible ? '👁️' : '🙈'}</span>
-                    <span class="layer-name" contenteditable="true">${layer.name}</span>
-                    <span class="layer-controls">
-                        <button class="move-up" ${index === 0 ? 'disabled' : ''}>↑</button>
-                        <button class="move-down" ${index === layers.length - 1 ? 'disabled' : ''}>↓</button>
-                    </span>
-                `;
+                const li = document.createElement('li'); li.className = layer.id === activeLayerId ? 'active' : ''; li.dataset.id = layer.id;
+                li.innerHTML = `<span class="visibility">${layer.isVisible ? '👁️' : '🙈'}</span><span class="layer-name" contenteditable="true">${layer.name}</span><span class="layer-controls"><button class="move-up" ${index === 0 ? 'disabled' : ''}>↑</button><button class="move-down" ${index === layers.length - 1 ? 'disabled' : ''}>↓</button></span>`;
                 layersList.appendChild(li);
             });
         }
-        
-        function updateLayerVisibility(layerId, visible) {
-            const layer = layers.find(l => l.id === layerId);
-            if (layer && layer.group) {
-                layer.group.style.display = visible ? 'block' : 'none';
-            }
-        }
-        
-        function reorderLayersInSVG() {
-            if (!drawingGroup) return;
-            // Remove all groups first
-            layers.forEach(layer => {
-                if (layer.group && layer.group.parentNode === drawingGroup) {
-                    layer.group.remove();
-                }
-            });
-            // Re-add in order (first layer = bottom, last = top)
-            layers.forEach(layer => {
-                if (layer.group) {
-                    drawingGroup.appendChild(layer.group);
-                }
-            });
-        }
-        
-        function moveLayer(layerId, direction) {
-            const index = layers.findIndex(l => l.id === layerId);
-            if (index === -1) return;
-            
-            const newIndex = direction === 'up' ? index - 1 : index + 1;
-            if (newIndex < 0 || newIndex >= layers.length) return;
-            
-            // Swap layers
-            [layers[index], layers[newIndex]] = [layers[newIndex], layers[index]];
-            
-            // Update SVG order
-            reorderLayersInSVG();
-            renderLayersUI();
-        }
-
-        // --- EVENT LISTENERS ---
+        function updateLayerVisibility(layerId, visible) { const layer = layers.find(l => l.id === layerId); if (layer && layer.group) { layer.group.style.display = visible ? 'block' : 'none'; } }
+        function reorderLayersInSVG() { if (!drawingGroup) return; layers.forEach(layer => { if (layer.group && layer.group.parentNode === drawingGroup) { layer.group.remove(); } }); layers.forEach(layer => { if (layer.group) { drawingGroup.appendChild(layer.group); } }); }
+        function moveLayer(layerId, direction) { const index = layers.findIndex(l => l.id === layerId); if (index === -1) return; const newIndex = direction === 'up' ? index - 1 : index + 1; if (newIndex < 0 || newIndex >= layers.length) return; [layers[index], layers[newIndex]] = [layers[newIndex], layers[index]]; reorderLayersInSVG(); renderLayersUI(); }
         function setupToolbarListeners() {
             document.querySelectorAll('.toolbar button[id$="-tool-btn"]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    document.querySelector('.toolbar button.active').classList.remove('active');
-                    btn.classList.add('active');
-                    currentTool = btn.id.replace('-tool-btn', '');
-                    if (currentTool === 'pan') {
-                        svgDisplay.style.cursor = 'grab';
-                    } else if (currentTool === 'eraser') {
-                        svgDisplay.style.cursor = 'not-allowed';
-                    } else {
-                        svgDisplay.style.cursor = 'crosshair';
-                    }
+                    document.querySelector('.toolbar button.active').classList.remove('active'); btn.classList.add('active'); currentTool = btn.id.replace('-tool-btn', '');
+                    if (currentTool === 'pan') { svgDisplay.style.cursor = 'grab'; } else if (currentTool === 'eraser') { svgDisplay.style.cursor = 'not-allowed'; } else { svgDisplay.style.cursor = 'crosshair'; }
                 });
             });
             document.getElementById('bg-color-picker').addEventListener('input', e => viewerWrapper.style.backgroundColor = e.target.value);
         }
-
         function setupPanZoomListeners() {
-            viewerWrapper.addEventListener('mousedown', e => {
-                if (currentTool !== 'pan' || e.button !== 0 || !svgElement) return;
-                isPanning = true;
-                svgDisplay.style.cursor = 'grabbing';
-                panStartPoint = { x: e.clientX, y: e.clientY };
-            });
-            viewerWrapper.addEventListener('mousemove', e => {
-                if (!isPanning) return;
-                const dx = panStartPoint.x - e.clientX;
-                const dy = panStartPoint.y - e.clientY;
-                viewBox[0] += dx * (viewBox[2] / viewerWrapper.clientWidth);
-                viewBox[1] += dy * (viewBox[3] / viewerWrapper.clientHeight);
-                svgElement.setAttribute('viewBox', viewBox.join(' '));
-                panStartPoint = { x: e.clientX, y: e.clientY };
-            });
-            window.addEventListener('mouseup', () => {
-                isPanning = false;
-                if(currentTool === 'pan' && svgElement) svgDisplay.style.cursor = 'grab';
-            });
-            
+            viewerWrapper.addEventListener('mousedown', e => { if (currentTool !== 'pan' || e.button !== 0 || !svgElement) return; isPanning = true; svgDisplay.style.cursor = 'grabbing'; panStartPoint = { x: e.clientX, y: e.clientY }; });
+            viewerWrapper.addEventListener('mousemove', e => { if (!isPanning) return; const dx = panStartPoint.x - e.clientX; const dy = panStartPoint.y - e.clientY; viewBox[0] += dx * (viewBox[2] / viewerWrapper.clientWidth); viewBox[1] += dy * (viewBox[3] / viewerWrapper.clientHeight); svgElement.setAttribute('viewBox', viewBox.join(' ')); panStartPoint = { x: e.clientX, y: e.clientY }; });
+            window.addEventListener('mouseup', () => { isPanning = false; if(currentTool === 'pan' && svgElement) svgDisplay.style.cursor = 'grab'; });
             viewerWrapper.addEventListener('wheel', e => {
-                if (!svgElement) return;
-                e.preventDefault();
-                
-                const rect = viewerWrapper.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
-                const xPercent = mouseX / rect.width;
-                const yPercent = mouseY / rect.height;
-                
-                const [x, y, w, h] = viewBox;
-                
-                const zoomFactor = 1.1;
-                const scale = e.deltaY > 0 ? zoomFactor : 1 / zoomFactor;
-                
-                const newW = w * scale;
-                const newH = h * scale;
-                
-                const svgX = x + w * xPercent;
-                const svgY = y + h * yPercent;
-                
-                const newX = svgX - newW * xPercent;
-                const newY = svgY - newH * yPercent;
-                
-                viewBox = [newX, newY, newW, newH];
-                svgElement.setAttribute('viewBox', viewBox.join(' '));
+                if (!svgElement) return; e.preventDefault(); const rect = viewerWrapper.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top;
+                const xPercent = mouseX / rect.width; const yPercent = mouseY / rect.height;
+                const [x, y, w, h] = viewBox; const zoomFactor = 1.1; const scale = e.deltaY > 0 ? zoomFactor : 1 / zoomFactor;
+                const newW = w * scale; const newH = h * scale; const svgX = x + w * xPercent; const svgY = y + h * yPercent;
+                const newX = svgX - newW * xPercent; const newY = svgY - newH * yPercent;
+                viewBox = [newX, newY, newW, newH]; svgElement.setAttribute('viewBox', viewBox.join(' '));
             });
         }
-
         function setupDrawingListeners() {
             viewerWrapper.addEventListener('mousedown', e => {
-                // Handle eraser tool
-                if (currentTool === 'eraser' && e.button === 0 && svgElement) {
-                    const target = e.target;
-                    // Check if target is a drawn element (inside a layer group)
-                    const layerGroup = target.closest('g[id^="layer-"]');
-                    if (layerGroup && target !== layerGroup && target.tagName !== 'svg') {
-                        target.remove();
-                        return;
-                    }
-                }
-                
+                if (currentTool === 'eraser' && e.button === 0 && svgElement) { const target = e.target; const layerGroup = target.closest('g[id^="layer-"]'); if (layerGroup && target !== layerGroup && target.tagName !== 'svg') { target.remove(); return; } }
                 if (currentTool === 'pan' || currentTool === 'eraser' || e.button !== 0 || !activeLayerId || !svgElement) return;
-                isDrawing = true;
-                const pt = screenToSvgCoords(e.clientX, e.clientY);
-                startPoint = { x: pt.x, y: pt.y };
-                
-                const activeLayer = layers.find(l => l.id === activeLayerId);
-                const color = document.getElementById('fg-color-picker').value;
-                
+                isDrawing = true; const pt = screenToSvgCoords(e.clientX, e.clientY); startPoint = { x: pt.x, y: pt.y };
+                const activeLayer = layers.find(l => l.id === activeLayerId); const color = document.getElementById('fg-color-picker').value;
                 if (currentTool === 'pencil') {
                     currentPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                    currentPath.setAttribute('stroke', color);
-                    currentPath.setAttribute('stroke-width', '5');
-                    currentPath.setAttribute('fill', 'none');
-                    currentPath.setAttribute('stroke-linecap', 'round');
-                    currentPath.setAttribute('stroke-linejoin', 'round');
-                    currentPath.setAttribute('d', `M ${pt.x} ${pt.y}`);
-                    currentPath.style.pointerEvents = 'all'; // Make it clickable for eraser
-                    activeLayer.group.appendChild(currentPath);
+                    currentPath.setAttribute('stroke', color); currentPath.setAttribute('stroke-width', '5');
+                    currentPath.setAttribute('fill', 'none'); currentPath.setAttribute('stroke-linecap', 'round');
+                    currentPath.setAttribute('stroke-linejoin', 'round'); currentPath.setAttribute('d', `M ${pt.x} ${pt.y}`);
+                    currentPath.style.pointerEvents = 'all'; activeLayer.group.appendChild(currentPath);
                 } else {
-                    // Create preview element
-                    if (currentTool === 'line') {
-                        tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        tempElement.setAttribute('x1', pt.x);
-                        tempElement.setAttribute('y1', pt.y);
-                        tempElement.setAttribute('x2', pt.x);
-                        tempElement.setAttribute('y2', pt.y);
-                    } else if (currentTool === 'rect') {
-                        tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        tempElement.setAttribute('x', pt.x);
-                        tempElement.setAttribute('y', pt.y);
-                        tempElement.setAttribute('width', '0');
-                        tempElement.setAttribute('height', '0');
-                    } else if (currentTool === 'circle') {
-                        tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                        tempElement.setAttribute('cx', pt.x);
-                        tempElement.setAttribute('cy', pt.y);
-                        tempElement.setAttribute('r', '0');
-                    }
-                    if (tempElement) {
-                        tempElement.setAttribute('stroke', '#aaa');
-                        tempElement.setAttribute('stroke-width', '3');
-                        tempElement.setAttribute('fill', 'none');
-                        tempElement.setAttribute('stroke-dasharray', '5,5');
-                        tempElement.style.pointerEvents = 'all'; // Make it clickable for eraser
-                        activeLayer.group.appendChild(tempElement);
-                    }
+                    if (currentTool === 'line') { tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'line'); tempElement.setAttribute('x1', pt.x); tempElement.setAttribute('y1', pt.y); tempElement.setAttribute('x2', pt.x); tempElement.setAttribute('y2', pt.y); }
+                    else if (currentTool === 'rect') { tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); tempElement.setAttribute('x', pt.x); tempElement.setAttribute('y', pt.y); tempElement.setAttribute('width', '0'); tempElement.setAttribute('height', '0'); }
+                    else if (currentTool === 'circle') { tempElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); tempElement.setAttribute('cx', pt.x); tempElement.setAttribute('cy', pt.y); tempElement.setAttribute('r', '0'); }
+                    if (tempElement) { tempElement.setAttribute('stroke', '#aaa'); tempElement.setAttribute('stroke-width', '3'); tempElement.setAttribute('fill', 'none'); tempElement.setAttribute('stroke-dasharray', '5,5'); tempElement.style.pointerEvents = 'all'; activeLayer.group.appendChild(tempElement); }
                 }
             });
-            
             viewerWrapper.addEventListener('mousemove', e => {
-                if (!isDrawing) return;
-                const pt = screenToSvgCoords(e.clientX, e.clientY);
-                
-                if (currentTool === 'pencil' && currentPath) {
-                    const d = currentPath.getAttribute('d');
-                    currentPath.setAttribute('d', `${d} L ${pt.x} ${pt.y}`);
-                } else if (tempElement) {
-                    if (currentTool === 'line') {
-                        tempElement.setAttribute('x2', pt.x);
-                        tempElement.setAttribute('y2', pt.y);
-                    } else if (currentTool === 'rect') {
-                        const x = Math.min(startPoint.x, pt.x);
-                        const y = Math.min(startPoint.y, pt.y);
-                        const w = Math.abs(pt.x - startPoint.x);
-                        const h = Math.abs(pt.y - startPoint.y);
-                        tempElement.setAttribute('x', x);
-                        tempElement.setAttribute('y', y);
-                        tempElement.setAttribute('width', w);
-                        tempElement.setAttribute('height', h);
-                    } else if (currentTool === 'circle') {
-                        const r = Math.hypot(pt.x - startPoint.x, pt.y - startPoint.y);
-                        tempElement.setAttribute('r', r);
-                    }
+                if (!isDrawing) return; const pt = screenToSvgCoords(e.clientX, e.clientY);
+                if (currentTool === 'pencil' && currentPath) { const d = currentPath.getAttribute('d'); currentPath.setAttribute('d', `${d} L ${pt.x} ${pt.y}`); }
+                else if (tempElement) {
+                    if (currentTool === 'line') { tempElement.setAttribute('x2', pt.x); tempElement.setAttribute('y2', pt.y); }
+                    else if (currentTool === 'rect') { const x = Math.min(startPoint.x, pt.x); const y = Math.min(startPoint.y, pt.y); const w = Math.abs(pt.x - startPoint.x); const h = Math.abs(pt.y - startPoint.y); tempElement.setAttribute('x', x); tempElement.setAttribute('y', y); tempElement.setAttribute('width', w); tempElement.setAttribute('height', h); }
+                    else if (currentTool === 'circle') { const r = Math.hypot(pt.x - startPoint.x, pt.y - startPoint.y); tempElement.setAttribute('r', r); }
                 }
             });
-
             window.addEventListener('mouseup', e => {
-                if (!isDrawing) return;
-                isDrawing = false;
-                
-                const color = document.getElementById('fg-color-picker').value;
-                
-                if (currentTool === 'pencil') {
-                    currentPath = null;
-                } else if (tempElement) {
-                    // Replace preview with final element
-                    tempElement.setAttribute('stroke', color);
-                    tempElement.setAttribute('stroke-width', '5');
-                    tempElement.removeAttribute('stroke-dasharray');
-                    tempElement = null;
-                }
+                if (!isDrawing) return; isDrawing = false; const color = document.getElementById('fg-color-picker').value;
+                if (currentTool === 'pencil') { currentPath = null; }
+                else if (tempElement) { tempElement.setAttribute('stroke', color); tempElement.setAttribute('stroke-width', '5'); tempElement.removeAttribute('stroke-dasharray'); tempElement = null; }
             });
         }
-        
         function setupLayerListeners() {
             document.getElementById('add-layer-btn').addEventListener('click', () => addLayer());
-            document.getElementById('remove-layer-btn').addEventListener('click', () => {
-                if (layers.length <= 1) return alert("Cannot delete the last layer.");
-                const layerToRemove = layers.find(l => l.id === activeLayerId);
-                if (layerToRemove && layerToRemove.group) {
-                    layerToRemove.group.remove();
-                }
-                layers = layers.filter(l => l.id !== activeLayerId);
-                setActiveLayer(layers.at(-1)?.id);
-                renderLayersUI();
-            });
+            document.getElementById('remove-layer-btn').addEventListener('click', () => { if (layers.length <= 1) return alert("Cannot delete the last layer."); const layerToRemove = layers.find(l => l.id === activeLayerId); if (layerToRemove && layerToRemove.group) { layerToRemove.group.remove(); } layers = layers.filter(l => l.id !== activeLayerId); setActiveLayer(layers.at(-1)?.id); renderLayersUI(); });
             layersList.addEventListener('click', e => {
-                const li = e.target.closest('li');
-                if (!li) return;
-                const id = Number(li.dataset.id);
-                
-                // Handle move up/down buttons
-                if (e.target.classList.contains('move-up')) {
-                    e.stopPropagation();
-                    moveLayer(id, 'up');
-                    return;
-                }
-                if (e.target.classList.contains('move-down')) {
-                    e.stopPropagation();
-                    moveLayer(id, 'down');
-                    return;
-                }
-                
-                // Handle visibility toggle
-                if (e.target.classList.contains('visibility')) {
-                    const layer = layers.find(l => l.id === id);
-                    layer.isVisible = !layer.isVisible;
-                    updateLayerVisibility(id, layer.isVisible);
-                    renderLayersUI();
-                } else if (!e.target.classList.contains('layer-name') && !e.target.closest('.layer-controls')) {
-                    // Select layer only if not clicking on name or controls
-                    setActiveLayer(id);
-                }
+                const li = e.target.closest('li'); if (!li) return; const id = Number(li.dataset.id);
+                if (e.target.classList.contains('move-up')) { e.stopPropagation(); moveLayer(id, 'up'); return; }
+                if (e.target.classList.contains('move-down')) { e.stopPropagation(); moveLayer(id, 'down'); return; }
+                if (e.target.classList.contains('visibility')) { const layer = layers.find(l => l.id === id); layer.isVisible = !layer.isVisible; updateLayerVisibility(id, layer.isVisible); renderLayersUI(); }
+                else if (!e.target.classList.contains('layer-name') && !e.target.closest('.layer-controls')) { setActiveLayer(id); }
             });
-            layersList.addEventListener('focusout', e => {
-                if (e.target.classList.contains('layer-name')) {
-                    const id = Number(e.target.closest('li').dataset.id);
-                    const layer = layers.find(l => l.id === id);
-                    layer.name = e.target.textContent;
-                    if (layer.group) {
-                        layer.group.setAttribute('data-layer-name', layer.name);
-                    }
-                }
-            });
+            layersList.addEventListener('focusout', e => { if (e.target.classList.contains('layer-name')) { const id = Number(e.target.closest('li').dataset.id); const layer = layers.find(l => l.id === id); layer.name = e.target.textContent; if (layer.group) { layer.group.setAttribute('data-layer-name', layer.name); } } });
         }
-
         function setupSpreadsheetListeners() {
             dataTable.addEventListener('dragover', e => e.preventDefault());
-            dataTable.addEventListener('drop', e => {
-                if (e.target.tagName !== 'TD') return;
-                const id = e.dataTransfer.getData('text/plain');
-                e.target.textContent += (e.target.textContent ? ',' : '') + id;
-            });
-            dataTable.addEventListener('contextmenu', e => {
-                e.preventDefault();
-                contextTargetCell = e.target.closest('td, th');
-                if (!contextTargetCell) return;
-                contextMenu.style.display = 'block';
-                contextMenu.style.left = `${e.clientX}px`;
-                contextMenu.style.top = `${e.clientY}px`;
-            });
+            dataTable.addEventListener('drop', e => { if (e.target.tagName !== 'TD') return; const id = e.dataTransfer.getData('text/plain'); e.target.textContent += (e.target.textContent ? ',' : '') + id; });
+            dataTable.addEventListener('contextmenu', e => { e.preventDefault(); contextTargetCell = e.target.closest('td, th'); if (!contextTargetCell) return; contextMenu.style.display = 'block'; contextMenu.style.left = `${e.clientX}px`; contextMenu.style.top = `${e.clientY}px`; });
             document.addEventListener('click', () => contextMenu.style.display = 'none');
-            document.getElementById('delete-row-btn').addEventListener('click', () => {
-                if (contextTargetCell && dataTable.tBodies[0].rows.length > 1) {
-                     contextTargetCell.parentElement.remove();
-                     updateTestCaseButtons();
-                }
-            });
-            document.getElementById('delete-col-btn').addEventListener('click', () => {
-                if (contextTargetCell) {
-                    const colIndex = contextTargetCell.cellIndex;
-                    for (const row of dataTable.rows) {
-                        if (colIndex < row.cells.length - 1) { // Don't delete actions column
-                            row.deleteCell(colIndex);
-                        }
-                    }
-                }
-            });
-            
-            // Make headers editable on double-click or via button
-            dataTable.querySelector('thead').addEventListener('dblclick', e => {
-                if (e.target.tagName === 'TH' && !e.target.textContent.includes('Actions')) {
-                    e.target.setAttribute('contenteditable', true);
-                    e.target.focus();
-                }
-            });
-            dataTable.querySelector('thead').addEventListener('focusout', e => {
-                 if (e.target.tagName === 'TH') e.target.removeAttribute('contenteditable');
-            });
-            
-            // Edit headers button
+            document.getElementById('delete-row-btn').addEventListener('click', () => { if (contextTargetCell && dataTable.tBodies[0].rows.length > 1) { contextTargetCell.parentElement.remove(); updateTestCaseButtons(); } });
+            document.getElementById('delete-col-btn').addEventListener('click', () => { if (contextTargetCell) { const colIndex = contextTargetCell.cellIndex; for (const row of dataTable.rows) { if (colIndex < row.cells.length - 1) { row.deleteCell(colIndex); } } } });
+            dataTable.querySelector('thead').addEventListener('dblclick', e => { if (e.target.tagName === 'TH' && !e.target.textContent.includes('Actions')) { e.target.setAttribute('contenteditable', true); e.target.focus(); } });
+            dataTable.querySelector('thead').addEventListener('focusout', e => { if (e.target.tagName === 'TH') e.target.removeAttribute('contenteditable'); });
             document.getElementById('edit-headers-btn').addEventListener('click', () => {
                 const headers = dataTable.querySelectorAll('thead th');
-                headers.forEach(th => {
-                    if (!th.textContent.includes('Actions')) {
-                        th.setAttribute('contenteditable', true);
-                        th.style.backgroundColor = '#4a4d4f';
-                    }
-                });
-                // Focus first header
+                headers.forEach(th => { if (!th.textContent.includes('Actions')) { th.setAttribute('contenteditable', true); th.style.backgroundColor = '#4a4d4f'; } });
                 if (headers.length > 0) headers[0].focus();
-                
-                // Remove editing state when clicking outside
-                const removeEditingState = () => {
-                    headers.forEach(th => {
-                        th.removeAttribute('contenteditable');
-                        th.style.backgroundColor = '';
-                    });
-                    document.removeEventListener('click', removeEditingState);
-                };
+                const removeEditingState = () => { headers.forEach(th => { th.removeAttribute('contenteditable'); th.style.backgroundColor = ''; }); document.removeEventListener('click', removeEditingState); };
                 setTimeout(() => document.addEventListener('click', removeEditingState, { once: true }), 100);
             });
-            
             document.getElementById('add-row-btn').addEventListener('click', addTestCase);
-            
-            // New spreadsheet functions
-            window.addColumnToRow = function(rowIndex) {
-                const row = dataTable.tBodies[0].rows[rowIndex];
-                const actionsCell = row.querySelector('.actions-cell');
-                const newCell = row.insertCell(row.cells.length - 1); // Insert before actions
-                newCell.setAttribute('contenteditable', 'true');
-            };
-            
-            window.deleteColumnFromRow = function(rowIndex) {
-                const row = dataTable.tBodies[0].rows[rowIndex];
-                const dataCells = [...row.cells].filter(cell => !cell.classList.contains('actions-cell'));
-                if (dataCells.length > 1) {
-                    const lastDataCell = dataCells[dataCells.length - 1];
-                    row.deleteCell(lastDataCell.cellIndex);
-                }
-            };
-            
-            window.deleteTestCase = function(rowIndex) {
-                if (dataTable.tBodies[0].rows.length > 1) {
-                    dataTable.tBodies[0].deleteRow(rowIndex);
-                    updateTestCaseButtons();
-                }
-            };
+            window.addColumnToRow = function(rowIndex) { const row = dataTable.tBodies[0].rows[rowIndex]; const newCell = row.insertCell(row.cells.length - 1); newCell.setAttribute('contenteditable', 'true'); };
+            window.deleteColumnFromRow = function(rowIndex) { const row = dataTable.tBodies[0].rows[rowIndex]; const dataCells = [...row.cells].filter(cell => !cell.classList.contains('actions-cell')); if (dataCells.length > 1) { const lastDataCell = dataCells[dataCells.length - 1]; row.deleteCell(lastDataCell.cellIndex); } };
+            window.deleteTestCase = function(rowIndex) { if (dataTable.tBodies[0].rows.length > 1) { dataTable.tBodies[0].deleteRow(rowIndex); updateTestCaseButtons(); } };
         }
-        
-        function addTestCase() {
-            const newRow = dataTable.tBodies[0].insertRow();
-            const colCount = dataTable.rows[0].cells.length - 1; // Exclude actions column
-            for (let i = 0; i < colCount; i++) newRow.insertCell().setAttribute('contenteditable', 'true');
-            const actionsCell = newRow.insertCell();
-            actionsCell.className = 'actions-cell';
-            updateTestCaseButtons();
-        }
-        
+        function addTestCase() { const newRow = dataTable.tBodies[0].insertRow(); const colCount = dataTable.rows[0].cells.length - 1; for (let i = 0; i < colCount; i++) newRow.insertCell().setAttribute('contenteditable', 'true'); const actionsCell = newRow.insertCell(); actionsCell.className = 'actions-cell'; updateTestCaseButtons(); }
         function updateTestCaseButtons() {
-            const tbody = dataTable.querySelector('tbody');
-            const rows = tbody.querySelectorAll('tr');
+            const tbody = dataTable.querySelector('tbody'); const rows = tbody.querySelectorAll('tr');
             rows.forEach((row, idx) => {
-                let actionsCell = row.querySelector('.actions-cell');
-                if (!actionsCell) {
-                    actionsCell = row.insertCell();
-                    actionsCell.className = 'actions-cell';
-                }
-                actionsCell.innerHTML = `
-                    <button onclick="addColumnToRow(${idx})">Add Cell</button>
-                    <button onclick="deleteColumnFromRow(${idx})">Delete Cell</button>
-                    <button onclick="deleteTestCase(${idx})">Delete Testcase</button>
-                `;
+                let actionsCell = row.querySelector('.actions-cell'); if (!actionsCell) { actionsCell = row.insertCell(); actionsCell.className = 'actions-cell'; }
+                actionsCell.innerHTML = `<button onclick="addColumnToRow(${idx})">Add Cell</button><button onclick="deleteColumnFromRow(${idx})">Delete Cell</button><button onclick="deleteTestCase(${idx})">Delete Testcase</button>`;
             });
         }
-
         function setupFileIOListeners() {
             document.getElementById('load-svg-btn').addEventListener('click', () => document.getElementById('svg-loader').click());
-            document.getElementById('svg-loader').addEventListener('change', e => {
-                const reader = new FileReader();
-                reader.onload = f => {
-                    const doc = new DOMParser().parseFromString(f.target.result, 'text/html');
-                    const svg = doc.querySelector('svg');
-                    loadSvg(svg.outerHTML);
-                };
-                reader.readAsText(e.target.files[0]);
-            });
+            document.getElementById('svg-loader').addEventListener('change', e => { const reader = new FileReader(); reader.onload = f => { const doc = new DOMParser().parseFromString(f.target.result, 'text/html'); const svg = doc.querySelector('svg'); loadSvg(svg.outerHTML); }; reader.readAsText(e.target.files[0]); });
             document.getElementById('save-template-btn').addEventListener('click', saveTemplate);
             document.getElementById('load-template-btn').addEventListener('click', () => document.getElementById('template-loader').click());
             document.getElementById('template-loader').addEventListener('change', loadTemplate);
@@ -680,377 +1549,145 @@
             document.getElementById('import-txt-btn').addEventListener('click', () => document.getElementById('txt-import-loader').click());
             document.getElementById('txt-import-loader').addEventListener('change', importFromTxt);
         }
-
         function loadSvg(svgString) {
-            svgDisplay.innerHTML = svgString;
-            svgElement = svgDisplay.querySelector('svg');
+            svgDisplay.innerHTML = svgString; svgElement = svgDisplay.querySelector('svg');
             viewBox = (svgElement.getAttribute('viewBox') || `0 0 ${svgElement.getAttribute('width')} ${svgElement.getAttribute('height')}`).split(' ').map(Number);
-            
-            // Create or find drawing group
             drawingGroup = svgElement.querySelector('#drawing-layer');
-            if (!drawingGroup) {
-                drawingGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                drawingGroup.setAttribute('id', 'drawing-layer');
-                svgElement.appendChild(drawingGroup);
-            }
-            
-            // Recreate layer groups
-            layers.forEach(layer => createLayerGroup(layer));
-            reorderLayersInSVG(); // Ensure correct draw order
-            
-            svgElement.querySelectorAll('g[id]').forEach(elem => {
-                if (elem.id !== 'drawing-layer' && !elem.id.startsWith('layer-')) {
-                    elem.setAttribute('draggable', true);
-                    elem.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', e.target.id));
-                }
-            });
+            if (!drawingGroup) { drawingGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); drawingGroup.setAttribute('id', 'drawing-layer'); svgElement.appendChild(drawingGroup); }
+            layers.forEach(layer => createLayerGroup(layer)); reorderLayersInSVG();
+            svgElement.querySelectorAll('g[id]').forEach(elem => { if (elem.id !== 'drawing-layer' && !elem.id.startsWith('layer-')) { elem.setAttribute('draggable', true); elem.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', e.target.id)); } });
         }
-
-        // --- SAVE/LOAD & EXPORT FUNCTIONS ---
-        function getTableData() {
-            const headers = [...dataTable.querySelectorAll('thead th')]
-                .filter(th => !th.textContent.includes('Actions'))
-                .map(th => th.textContent);
-            const rows = [...dataTable.querySelectorAll('tbody tr')].map(tr => 
-                [...tr.querySelectorAll('td')]
-                    .filter(td => !td.classList.contains('actions-cell'))
-                    .map(td => td.textContent)
-            );
-            return { headers, rows };
-        }
-
-        function buildTable(headers, rows) {
-            dataTable.innerHTML = `<thead><tr>${headers.map(h => `<th contenteditable="false">${h}</th>`).join('')}<th style="min-width:200px;">Actions</th></tr></thead>
-                                   <tbody>${rows.map(row => `<tr>${row.map(cell => `<td contenteditable="true">${cell}</td>`).join('')}<td class="actions-cell"></td></tr>`).join('')}</tbody>`;
-            updateTestCaseButtons();
-        }
-
-        function saveTemplate() {
-            const data = { headers: getTableData().headers };
-            downloadJSON(data, 'spreadsheet-template.json');
-        }
-
-        function loadTemplate(event) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const { headers } = JSON.parse(e.target.result);
-                buildTable(headers, [Array(headers.length).fill('')]);
-            };
-            reader.readAsText(event.target.files[0]);
-        }
-
+        function getTableData() { const headers = [...dataTable.querySelectorAll('thead th')].filter(th => !th.textContent.includes('Actions')).map(th => th.textContent); const rows = [...dataTable.querySelectorAll('tbody tr')].map(tr => [...tr.querySelectorAll('td')].filter(td => !td.classList.contains('actions-cell')).map(td => td.textContent)); return { headers, rows }; }
+        function buildTable(headers, rows) { dataTable.innerHTML = `<thead><tr>${headers.map(h => `<th contenteditable="false">${h}</th>`).join('')}<th style="min-width:200px;">Actions</th></tr></thead><tbody>${rows.map(row => `<tr>${row.map(cell => `<td contenteditable="true">${cell}</td>`).join('')}<td class="actions-cell"></td></tr>`).join('')}</tbody>`; updateTestCaseButtons(); }
+        function saveTemplate() { const data = { headers: getTableData().headers }; downloadJSON(data, 'spreadsheet-template.json'); }
+        function loadTemplate(event) { const reader = new FileReader(); reader.onload = e => { const { headers } = JSON.parse(e.target.result); buildTable(headers, [Array(headers.length).fill('')]); }; reader.readAsText(event.target.files[0]); }
         function saveSession() {
             if (!svgElement) return alert("Cannot save session without a loaded SVG.");
-            
-            // Serialize layer data
-            const layerData = layers.map(layer => ({
-                id: layer.id,
-                name: layer.name,
-                isVisible: layer.isVisible,
-                svgContent: layer.group ? layer.group.innerHTML : ''
-            }));
-            
-            const session = {
-                svgContent: svgDisplay.innerHTML,
-                viewBox,
-                layerData,
-                activeLayerId,
-                tableData: getTableData(),
-                backgroundColor: viewerWrapper.style.backgroundColor
-            };
+            const layerData = layers.map(layer => ({ id: layer.id, name: layer.name, isVisible: layer.isVisible, svgContent: layer.group ? layer.group.innerHTML : '' }));
+            const session = { svgContent: svgDisplay.innerHTML, viewBox, layerData, activeLayerId, tableData: getTableData(), backgroundColor: viewerWrapper.style.backgroundColor };
             downloadJSON(session, 'railway-session.json');
         }
-
         function loadSession(event) {
             const reader = new FileReader();
             reader.onload = e => {
-                const session = JSON.parse(e.target.result);
-                loadSvg(session.svgContent);
-                viewBox = session.viewBox;
+                const session = JSON.parse(e.target.result); loadSvg(session.svgContent); viewBox = session.viewBox;
                 svgElement.setAttribute('viewBox', viewBox.join(' '));
-                
-                // Clear existing layers
-                layers.forEach(layer => {
-                    if (layer.group) layer.group.remove();
-                });
-                layers = [];
-                
-                // Restore layers (handle both old and new format)
-                if (session.layerData) {
-                    // New format with SVG-based layers
-                    session.layerData.forEach(layerData => {
-                        const layer = {
-                            id: layerData.id,
-                            name: layerData.name,
-                            isVisible: layerData.isVisible,
-                            group: null
-                        };
-                        layers.push(layer);
-                        createLayerGroup(layer);
-                        if (layerData.svgContent && layer.group) {
-                            layer.group.innerHTML = layerData.svgContent;
-                        }
-                        updateLayerVisibility(layer.id, layer.isVisible);
-                    });
-                } else if (session.layers) {
-                    // Old format - just restore layer metadata, no drawings
-                    session.layers.forEach(oldLayer => {
-                        const layer = {
-                            id: oldLayer.id,
-                            name: oldLayer.name,
-                            isVisible: oldLayer.isVisible,
-                            group: null
-                        };
-                        layers.push(layer);
-                        createLayerGroup(layer);
-                        updateLayerVisibility(layer.id, layer.isVisible);
-                    });
-                }
-                
-                // Ensure at least one layer exists
-                if (layers.length === 0) {
-                    const defaultLayer = { id: Date.now(), name: "Default Layer", isVisible: true, group: null };
-                    layers.push(defaultLayer);
-                    createLayerGroup(defaultLayer);
-                }
-                
-                activeLayerId = session.activeLayerId || layers[0].id;
-                buildTable(session.tableData.headers, session.tableData.rows);
-                viewerWrapper.style.backgroundColor = session.backgroundColor;
-                document.getElementById('bg-color-picker').value = rgbToHex(session.backgroundColor);
-                renderLayersUI();
-                reorderLayersInSVG(); // Ensure layers are in correct draw order
+                layers.forEach(layer => { if (layer.group) layer.group.remove(); }); layers = [];
+                if (session.layerData) { session.layerData.forEach(layerData => { const layer = { id: layerData.id, name: layerData.name, isVisible: layerData.isVisible, group: null }; layers.push(layer); createLayerGroup(layer); if (layerData.svgContent && layer.group) { layer.group.innerHTML = layerData.svgContent; } updateLayerVisibility(layer.id, layer.isVisible); }); }
+                else if (session.layers) { session.layers.forEach(oldLayer => { const layer = { id: oldLayer.id, name: oldLayer.name, isVisible: oldLayer.isVisible, group: null }; layers.push(layer); createLayerGroup(layer); updateLayerVisibility(layer.id, layer.isVisible); }); }
+                if (layers.length === 0) { const defaultLayer = { id: Date.now(), name: "Default Layer", isVisible: true, group: null }; layers.push(defaultLayer); createLayerGroup(defaultLayer); }
+                activeLayerId = session.activeLayerId || layers[0].id; buildTable(session.tableData.headers, session.tableData.rows);
+                viewerWrapper.style.backgroundColor = session.backgroundColor; document.getElementById('bg-color-picker').value = rgbToHex(session.backgroundColor);
+                renderLayersUI(); reorderLayersInSVG();
             };
             reader.readAsText(event.target.files[0]);
         }
-        
-        function exportToTxt(filename = 'Levelcrossing_export.txt') {
-            const { rows } = getTableData();
-            const outputText = rows.filter(row => row.some(cell => cell.trim() !== '')).map(row => row.join('|')).join('\n');
-            const blob = new Blob([outputText], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            link.click();
-            URL.revokeObjectURL(link.href);
-        }
-        
+        function exportToTxt(filename = 'Levelcrossing_export.txt') { const { rows } = getTableData(); const outputText = rows.filter(row => row.some(cell => cell.trim() !== '')).map(row => row.join('|')).join('\n'); const blob = new Blob([outputText], { type: 'text/plain' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; link.click(); URL.revokeObjectURL(link.href); }
         async function exportToDocx() {
-            if (typeof docx === 'undefined') {
-                alert('DOCX library not loaded. Please refresh the page.');
-                return;
-            }
-
-            const { headers, rows } = getTableData();
-            
-            // Filter out empty rows
-            const nonEmptyRows = rows.filter(row => row.some(cell => cell.trim() !== ''));
-            
-            // Create table rows for docx
-            const tableRows = [
-                // Header row
-                new docx.TableRow({
-                    children: headers.map(header => 
-                        new docx.TableCell({
-                            children: [new docx.Paragraph({
-                                text: header,
-                                bold: true
-                            })],
-                            shading: {
-                                fill: "CCCCCC"
-                            }
-                        })
-                    ),
-                    tableHeader: true
-                }),
-                // Data rows
-                ...nonEmptyRows.map(row => 
-                    new docx.TableRow({
-                        children: row.map(cell => 
-                            new docx.TableCell({
-                                children: [new docx.Paragraph(cell || '')]
-                            })
-                        )
-                    })
-                )
-            ];
-
-            // Create table
-            const table = new docx.Table({
-                rows: tableRows,
-                width: {
-                    size: 100,
-                    type: docx.WidthType.PERCENTAGE
-                },
-                borders: {
-                    top: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
-                    bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
-                    left: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
-                    right: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
-                    insideHorizontal: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" },
-                    insideVertical: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }
-                }
-            });
-
-            // Create document
-            const doc = new docx.Document({
-                sections: [{
-                    properties: {},
-                    children: [
-                        new docx.Paragraph({
-                            text: "Railway Configurator - Data Export",
-                            heading: docx.HeadingLevel.HEADING_1,
-                            spacing: {
-                                after: 200
-                            }
-                        }),
-                        table
-                    ]
-                }]
-            });
-
-            // Generate and download
-            try {
-                const blob = await docx.Packer.toBlob(doc);
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'railway_data_export.docx';
-                link.click();
-                URL.revokeObjectURL(link.href);
-            } catch (error) {
-                console.error('Error generating DOCX:', error);
-                alert('Error generating DOCX file. Check console for details.');
-            }
+            if (typeof docx === 'undefined') { alert('DOCX library not loaded. Please refresh the page.'); return; }
+            const { headers, rows } = getTableData(); const nonEmptyRows = rows.filter(row => row.some(cell => cell.trim() !== ''));
+            const tableRows = [ new docx.TableRow({ children: headers.map(header => new docx.TableCell({ children: [new docx.Paragraph({ text: header, bold: true })], shading: { fill: "CCCCCC" } })), tableHeader: true }), ...nonEmptyRows.map(row => new docx.TableRow({ children: row.map(cell => new docx.TableCell({ children: [new docx.Paragraph(cell || '')] })) })) ];
+            const table = new docx.Table({ rows: tableRows, width: { size: 100, type: docx.WidthType.PERCENTAGE }, borders: { top: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }, bottom: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }, left: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }, right: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }, insideHorizontal: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" }, insideVertical: { style: docx.BorderStyle.SINGLE, size: 1, color: "000000" } } });
+            const doc = new docx.Document({ sections: [{ properties: {}, children: [ new docx.Paragraph({ text: "Railway Configurator - Data Export", heading: docx.HeadingLevel.HEADING_1, spacing: { after: 200 } }), table ] }] });
+            try { const blob = await docx.Packer.toBlob(doc); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'railway_data_export.docx'; link.click(); URL.revokeObjectURL(link.href); }
+            catch (error) { console.error('Error generating DOCX:', error); alert('Error generating DOCX file. Check console for details.'); }
         }
-        
         function importFromTxt(event) {
             const reader = new FileReader();
             reader.onload = e => {
-                const content = e.target.result;
-                const lines = content.split('\n').filter(line => line.trim() !== '');
-                
-                if (lines.length === 0) return alert('Empty file');
-                
-                const rows = lines.map(line => line.split('|').map(cell => cell.trim()));
-                const { headers } = getTableData();
+                const content = e.target.result; const lines = content.split('\n').filter(line => line.trim() !== ''); if (lines.length === 0) return alert('Empty file');
+                const rows = lines.map(line => line.split('|').map(cell => cell.trim())); const { headers } = getTableData();
                 const maxCols = Math.max(...rows.map(r => r.length), headers.length);
-                
-                while (headers.length < maxCols) {
-                    headers.push(`Column ${headers.length + 1}`);
-                }
-                
+                while (headers.length < maxCols) { headers.push(`Column ${headers.length + 1}`); }
                 buildTable(headers, rows);
             };
             reader.readAsText(event.target.files[0]);
         }
-        
         function addColumn() {
-            const headerRow = dataTable.querySelector('thead tr');
-            const actionsHeader = headerRow.querySelector('th:last-child');
-            const newHeader = document.createElement('th');
-            newHeader.textContent = `Column ${headerRow.cells.length}`;
-            newHeader.setAttribute('contenteditable', 'false');
-            headerRow.insertBefore(newHeader, actionsHeader);
-            
+            const headerRow = dataTable.querySelector('thead tr'); const actionsHeader = headerRow.querySelector('th:last-child');
+            const newHeader = document.createElement('th'); newHeader.textContent = `Column ${headerRow.cells.length}`;
+            newHeader.setAttribute('contenteditable', 'false'); headerRow.insertBefore(newHeader, actionsHeader);
             const rows = dataTable.querySelectorAll('tbody tr');
-            rows.forEach(row => {
-                const actionsCell = row.querySelector('.actions-cell');
-                const newCell = row.insertCell(row.cells.length - 1);
-                newCell.setAttribute('contenteditable', 'true');
-            });
+            rows.forEach(row => { const newCell = row.insertCell(row.cells.length - 1); newCell.setAttribute('contenteditable', 'true'); });
         }
-
-        function downloadJSON(data, filename) {
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            link.click();
-            URL.revokeObjectURL(link.href);
-        }
-        
-        function rgbToHex(rgb) {
-            if (!rgb || !rgb.includes('rgb')) return '#2b2c2e';
-            let [r, g, b] = rgb.match(/\d+/g).map(Number);
-            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0');
-        }
-        
-        // --- START THE APP ---
-        // Initialize with default layer (will create group when SVG is loaded)
-        const defaultLayer = { id: Date.now(), name: "Default Layer", isVisible: true, group: null };
-        layers.push(defaultLayer);
-        activeLayerId = defaultLayer.id;
-        renderLayersUI();
-        
-        setupToolbarListeners();
-        setupSpreadsheetListeners();
-        setupFileIOListeners();
-        setupLayerListeners();
-        setupPanZoomListeners();
-        setupDrawingListeners();
-        updateTestCaseButtons();
+        function downloadJSON(data, filename) { const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = filename; link.click(); URL.revokeObjectURL(link.href); }
+        function rgbToHex(rgb) { if (!rgb || !rgb.includes('rgb')) return '#2b2c2e'; let [r, g, b] = rgb.match(/\d+/g).map(Number); return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0'); }
+        const defaultLayer = { id: Date.now(), name: "Default Layer", isVisible: true, group: null }; layers.push(defaultLayer); activeLayerId = defaultLayer.id;
+        renderLayersUI(); setupToolbarListeners(); setupSpreadsheetListeners(); setupFileIOListeners(); setupLayerListeners(); setupPanZoomListeners(); setupDrawingListeners(); updateTestCaseButtons();
 
         // --- PDF VIEWER FUNCTIONALITY ---
-        let pdfDoc = null;
-        let currentPage = 1;
-        let pdfZoom = 1.0;
-        const pdfDisplay = document.getElementById('pdf-display');
-        const pageInfo = document.getElementById('pdf-page-info');
+        let pdfDoc = null; let currentPage = 1; let pdfZoom = 1.0;
+        const pdfDisplay = document.getElementById('pdf-display'); const pageInfo = document.getElementById('pdf-page-info');
+        document.getElementById('load-pdf-btn').addEventListener('click', () => { document.getElementById('pdf-file-input').click(); });
+        document.getElementById('pdf-file-input').addEventListener('change', (e) => { const file = e.target.files[0]; if (file && file.type === 'application/pdf') { const fileURL = URL.createObjectURL(file); loadPDFInIframe(fileURL); } });
+        function loadPDFInIframe(url) { pdfDisplay.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`; pageInfo.textContent = 'PDF Loaded'; }
+        document.getElementById('pdf-search-btn').addEventListener('click', () => { const searchTerm = document.getElementById('pdf-search-input').value; if (searchTerm) { const iframe = pdfDisplay.querySelector('iframe'); if (iframe && iframe.contentWindow) { try { iframe.contentWindow.postMessage({type: 'search', term: searchTerm}, '*'); } catch (e) { alert('Search functionality requires browser support. Try using Ctrl+F in the PDF viewer.'); } } } });
+        document.getElementById('pdf-zoom-in-btn').addEventListener('click', () => { const iframe = pdfDisplay.querySelector('iframe'); if (iframe) { pdfZoom += 0.1; iframe.style.transform = `scale(${pdfZoom})`; iframe.style.transformOrigin = 'top center'; } });
+        document.getElementById('pdf-zoom-out-btn').addEventListener('click', () => { const iframe = pdfDisplay.querySelector('iframe'); if (iframe && pdfZoom > 0.5) { pdfZoom -= 0.1; iframe.style.transform = `scale(${pdfZoom})`; iframe.style.transformOrigin = 'top center'; } });
+        document.getElementById('pdf-search-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') { document.getElementById('pdf-search-btn').click(); } });
 
-        document.getElementById('load-pdf-btn').addEventListener('click', () => {
-            document.getElementById('pdf-file-input').click();
+        // --- STERNOL VISUALIZER INIT ---
+        descInput = document.getElementById("descFile");
+        sternolInput = document.getElementById("sternolFile");
+        CovCriteriaNum = document.getElementById("CovCriteriaNum");
+        statOut = document.getElementById("statOut");
+        statDetail = document.getElementById("statDetail");
+        coverageReportDetails = document.getElementById("coverage-report-details");
+        coverageReportDetails.style.display = "none";
+        coverageFilter = document.getElementById("coverage-filter");
+        coverageFilter.style.display = "none";
+        newTabModeInput = document.getElementById("new-tab-mode-input");
+        tooltip = document.querySelector(".tool-tip");
+        tooltip.addEventListener("mouseleave", (event) => { tooltip.style["transition-delay"] = "0s"; tooltip.style.visibility = "hidden"; tooltip.style.opacity = 0; });
+        
+        window.addEventListener("popstate", e => {
+            if (!e.state) return;
+            if (e.state.length == 2) { const [objName, variable] = e.state; plot(sternolGlobal, objName, variable, this); }
+            else if (e.state.length == 3) { const [ilsName, objName, varName] = e.state; eqsimeOpenInSameWindow(ilsName, objName, varName); }
         });
 
-        document.getElementById('pdf-file-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type === 'application/pdf') {
-                const fileURL = URL.createObjectURL(file);
-                loadPDFInIframe(fileURL);
-            }
-        });
-
-        function loadPDFInIframe(url) {
-            pdfDisplay.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
-            pageInfo.textContent = 'PDF Loaded';
+        if (window.File && window.FileList && window.FileReader) {
+            CovCriteriaNum.addEventListener("change", function (event) { if (sternolGlobal != undefined) { displayOverview(CovCriteriaNum.value); } });
+            sternolInput.addEventListener("change", function (event) {
+                var fileReader = new FileReader();
+                fileReader.addEventListener("load", function (event) {
+                    const spinner = document.getElementById("spinner"); spinner.style.visibility = "visible";
+                    setTimeout(() => { sternolGlobal = parseCovFile(event.target.result); displayOverview(CovCriteriaNum.value); spinner.style.visibility = "hidden"; }, 100);
+                });
+                fileReader.readAsText(this.files[0]);
+            });
+            descInput.addEventListener("change", function (event) {
+                let fileReader = new FileReader(); variableDesc = null;
+                const varDetails = document.querySelector("#varDescOut > details");
+                for (let e of document.querySelectorAll("#varDescOut > details > details")) { varDetails.removeChild(e); }
+                fileReader.addEventListener("load", function (event) {
+                    const spinner = document.getElementById("spinner"); spinner.style.visibility = "visible";
+                    setTimeout(() => { variableDesc = parseDescFile(event.target.result); displayDescriptions(window); spinner.style.visibility = "hidden"; }, 100);
+                });
+                fileReader.readAsText(this.files[0], "iso-8859-1");
+            });
+        } else {
+            console.log("Your browser does not support File API");
+            alert("Your browser does not support File API");
         }
-
-        document.getElementById('pdf-search-btn').addEventListener('click', () => {
-            const searchTerm = document.getElementById('pdf-search-input').value;
-            if (searchTerm) {
-                const iframe = pdfDisplay.querySelector('iframe');
-                if (iframe && iframe.contentWindow) {
-                    try {
-                        iframe.contentWindow.postMessage({type: 'search', term: searchTerm}, '*');
-                    } catch (e) {
-                        alert('Search functionality requires browser support. Try using Ctrl+F in the PDF viewer.');
-                    }
-                }
-            }
-        });
-
-        document.getElementById('pdf-zoom-in-btn').addEventListener('click', () => {
-            const iframe = pdfDisplay.querySelector('iframe');
-            if (iframe) {
-                pdfZoom += 0.1;
-                iframe.style.transform = `scale(${pdfZoom})`;
-                iframe.style.transformOrigin = 'top center';
-            }
-        });
-
-        document.getElementById('pdf-zoom-out-btn').addEventListener('click', () => {
-            const iframe = pdfDisplay.querySelector('iframe');
-            if (iframe && pdfZoom > 0.5) {
-                pdfZoom -= 0.1;
-                iframe.style.transform = `scale(${pdfZoom})`;
-                iframe.style.transformOrigin = 'top center';
-            }
-        });
-
-        document.getElementById('pdf-search-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('pdf-search-btn').click();
-            }
-        });
+        
+        const domEqsimHost = document.getElementById("eqsimHost");
+        const domEqsimPort = document.getElementById("eqsimPort");
+        const domEqsimHostList = document.getElementById("eqsimHostList");
+        let eqsimHosts = (localStorage.getItem("sternol-visualizer.eqsimHosts") || "").split(",").filter(Boolean);
+        domEqsimHost.addEventListener("change", () => { let [host, port] = domEqsimHost.value.split(":"); if (port) { domEqsimHost.value = host; domEqsimPort.value = port; } });
+        function addHost(host, port=null) {
+            const addr = port ? `${host}:${port}` : host; if (eqsimHosts.includes(addr)) return;
+            eqsimHosts.unshift(addr); while (eqsimHosts.length > 10) { eqsimHosts.pop(); }
+            localStorage.setItem("sternol-visualizer.eqsimHosts", eqsimHosts.join(","));
+            domEqsimHostList.replaceChildren(...eqsimHosts.map(h => { const option = document.createElement("option"); option.setAttribute("value", h); return option; }));
+        }
+        domEqsimHostList.replaceChildren(...eqsimHosts.map(h => { const option = document.createElement("option"); option.setAttribute("value", h); return option; }));
+        const toolVersion = "2.7.1";
+        document.getElementById("toolVersion").textContent = toolVersion;
+        let ctxSternol = document.getElementById("contextMenuSternol");
+        if(document.querySelector("#varDescOut img")) document.querySelector("#varDescOut img").onclick = openDescInNewTab;
+        document.addEventListener("click", () => { if(ctxSternol) ctxSternol.style.display = "none"; });
     });
     </script>
 </body>
